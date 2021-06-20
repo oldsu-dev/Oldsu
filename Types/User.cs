@@ -1,18 +1,11 @@
-﻿using System;
+﻿using Oldsu.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Oldsu.Types
 {
-    [Flags]
-    public enum Privileges
-    {
-        Normal = 1,
-        GMT = 2,
-        BAT = 4,
-        Developer = 8
-    }
 
     public class User
     {

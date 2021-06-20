@@ -13,5 +13,6 @@ namespace Oldsu
             );
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Stats> Stats { get; set; }
     }
 }
