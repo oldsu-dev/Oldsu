@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Oldsu.Types;
 using System;
+using System.Threading.Tasks;
 
 namespace Oldsu
 {
@@ -10,6 +11,22 @@ namespace Oldsu
             options.UseMySql(
                 Environment.GetEnvironmentVariable("OLDSU_DB_CONNECTION_STRING"),
                 MySqlServerVersion.LatestSupportedServerVersion
+            );
+
+        public async Task<User> Authenticate(string username, string password) =>
+            await this.Users.FromSqlRaw(
+               "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
+               username, password
+            ).FirstAsync();
+
+        public async Task Register(string username, string email, string password, string country) =>
+            await this.Database.ExecuteSqlRawAsync(
+               @"INSERT INTO `oldsu_test`.`Users`
+               (`Username`, `Email`, `Password`, `Country`) 
+               VALUES
+               ({0}, {1}, {2}, {3});",
+
+               username, email, password, country
             );
 
         public DbSet<User> Users { get; set; }
