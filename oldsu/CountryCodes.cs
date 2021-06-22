@@ -2,10 +2,10 @@
 
 namespace Oldsu
 {
-    public static class Country
+    public static class CountryCodes
     {
         // TODO: Add country name dictionary ( { "IT", "Italy" } )
-        public static readonly Dictionary<string, byte> Codes = new() {
+        public static readonly Dictionary<string, byte> ToCode = new() {
             { "IO", 104 },
             { "PS", 178 },
             { "BZ", 37  },
