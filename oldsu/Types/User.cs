@@ -1,4 +1,4 @@
-﻿using Oldsu.Enums;
+using Oldsu.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,8 +16,7 @@ namespace Oldsu.Types
         public string Username { get; set; }
 
         [Required]
-        [StringLength(2)]
-        public string Country { get; set; }
+        public byte Country { get; set; }
 
         public bool Banned { get; set; }
         public string BannedReason { get; set; }
