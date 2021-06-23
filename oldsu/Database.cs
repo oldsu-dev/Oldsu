@@ -13,11 +13,20 @@ namespace Oldsu
                 MySqlServerVersion.LatestSupportedServerVersion
             );
 
-        public async Task<User> Authenticate(string username, string password) =>
-            await this.Users.FromSqlRaw(
-               "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
-               username, password
-            ).FirstAsync();
+        public async Task<User> Authenticate(string username, string password)
+        {
+            try
+            {
+                return await this.Users.FromSqlRaw(
+                    "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
+                    username, password
+                ).FirstAsync();
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         public async Task Register(string username, string email, string password, string country) =>
             await this.Database.ExecuteSqlRawAsync(
