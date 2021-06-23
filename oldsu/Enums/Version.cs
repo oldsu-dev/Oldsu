@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Oldsu.Enums
 {
-    enum Version
+    public enum Version
     {
         B394A
     }
