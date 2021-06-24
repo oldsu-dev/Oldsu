@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Oldsu.Types;
 using System;
 using System.Threading.Tasks;
@@ -15,17 +15,10 @@ namespace Oldsu
 
         public async Task<User> Authenticate(string username, string password)
         {
-            try
-            {
-                return await this.Users.FromSqlRaw(
-                    "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
-                    username, password
-                ).FirstAsync();
-            }
-            catch
-            {
-                return null;
-            }
+            return await this.Users.FromSqlRaw(
+                "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
+                username, password
+            ).FirstOrDefaultAsync();
         }
 
         public async Task Register(string username, string email, string password, string country) =>
