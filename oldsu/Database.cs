@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Oldsu.Types;
 using System;
 using System.Threading.Tasks;
@@ -13,11 +13,13 @@ namespace Oldsu
                 MySqlServerVersion.LatestSupportedServerVersion
             );
 
-        public async Task<User> Authenticate(string username, string password) =>
-            await this.Users.FromSqlRaw(
-               "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
-               username, password
-            ).FirstAsync();
+        public async Task<User> Authenticate(string username, string password)
+        {
+            return await this.Users.FromSqlRaw(
+                "SELECT * FROM Users WHERE Username = {0} and Password = {1}",
+                username, password
+            ).FirstOrDefaultAsync();
+        }
 
         public async Task Register(string username, string email, string password, string country) =>
             await this.Database.ExecuteSqlRawAsync(
