@@ -1,3 +1,36 @@
+
+CREATE TABLE `Users` (
+  `UserID` int unsigned NOT NULL AUTO_INCREMENT,
+  `Username` varchar(32) NOT NULL,
+  `Password` char(32) NOT NULL,
+  `Country` tinyint unsigned NOT NULL,
+  `Banned` tinyint unsigned NOT NULL DEFAULT '0',
+  `BannedReason` text,
+  `Email` tinytext NOT NULL,
+  `Privileges` tinyint unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`UserID`),
+  UNIQUE KEY `Username_UNIQUE` (`Username`),
+  UNIQUE KEY `UserID_UNIQUE` (`UserID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `Beatmapsets` (
+  `BeatmapsetID` int NOT NULL AUTO_INCREMENT,
+  `CreatorID` int unsigned NOT NULL,
+  `Artist` tinytext NOT NULL,
+  `Title` text NOT NULL,
+  `Source` tinytext NOT NULL,
+  `Tags` json NOT NULL,
+  `RankingStatus` tinyint NOT NULL DEFAULT '-1',
+  `RankedBy` text,
+  `SubmittedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`BeatmapsetID`),
+  UNIQUE KEY `BeatmapsetID_UNIQUE` (`BeatmapsetID`),
+  KEY `fk_beatmapset_creator_id_idx` (`CreatorID`),
+  CONSTRAINT `fk_beatmapset_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `Users` (`UserID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 CREATE TABLE `Badges` (
   `UserID` int unsigned NOT NULL,
   `Filename` tinytext NOT NULL,
@@ -21,22 +54,6 @@ CREATE TABLE `Beatmaps` (
   UNIQUE KEY `BeatmapHash_UNIQUE` (`BeatmapHash`),
   KEY `fk_beatmaps_idx` (`BeatmapsetID`),
   CONSTRAINT `fk_beatmaps_idx` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `Beatmapsets` (
-  `BeatmapsetID` int NOT NULL AUTO_INCREMENT,
-  `CreatorID` int unsigned NOT NULL,
-  `Artist` tinytext NOT NULL,
-  `Title` text NOT NULL,
-  `Source` tinytext NOT NULL,
-  `Tags` json NOT NULL,
-  `RankingStatus` tinyint NOT NULL DEFAULT '-1',
-  `RankedBy` text,
-  `SubmittedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`BeatmapsetID`),
-  UNIQUE KEY `BeatmapsetID_UNIQUE` (`BeatmapsetID`),
-  KEY `fk_beatmapset_creator_id_idx` (`CreatorID`),
-  CONSTRAINT `fk_beatmapset_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `Users` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Scores` (
@@ -103,17 +120,4 @@ CREATE TABLE `Userpages` (
   CONSTRAINT `fk_userid` FOREIGN KEY (`UserID`) REFERENCES `Users` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `Users` (
-  `UserID` int unsigned NOT NULL AUTO_INCREMENT,
-  `Username` varchar(32) NOT NULL,
-  `Password` char(32) NOT NULL,
-  `Country` tinyint unsigned NOT NULL,
-  `Banned` tinyint unsigned NOT NULL DEFAULT '0',
-  `BannedReason` text,
-  `Email` tinytext NOT NULL,
-  `Privileges` tinyint unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`UserID`),
-  UNIQUE KEY `Username_UNIQUE` (`Username`),
-  UNIQUE KEY `UserID_UNIQUE` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
