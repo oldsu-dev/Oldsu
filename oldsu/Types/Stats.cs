@@ -19,7 +19,7 @@ namespace Oldsu.Types
         public ulong TotalScore { get; set; }
 
         public double UserLevel { get; set; }
-        public double Accuracy { get; set; }
+        public float Accuracy { get; set; }
         
         public ulong Playcount { get; set; }
 
