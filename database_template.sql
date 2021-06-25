@@ -1,8 +1,7 @@
-
 CREATE TABLE `Users` (
   `UserID` int unsigned NOT NULL AUTO_INCREMENT,
   `Username` varchar(32) NOT NULL,
-  `Password` char(32) NOT NULL,
+  `Password` char(64) NOT NULL,
   `Country` tinyint unsigned NOT NULL,
   `Banned` tinyint unsigned NOT NULL DEFAULT '0',
   `BannedReason` text,
