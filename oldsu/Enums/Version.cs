@@ -7,6 +7,7 @@ namespace Oldsu.Enums
     public enum Version
     {
         B394A,
+        B904,
         NotApplicable
     }
 }
