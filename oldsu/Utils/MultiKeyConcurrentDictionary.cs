@@ -38,11 +38,11 @@ namespace Oldsu.Utils
             }
         }
 
-        public bool TryRemove(TKey1 key1, TKey2 key2, TValue value)
+        public bool TryRemove(TKey1 key1, TKey2 key2, out TValue value)
         {
             lock (this)
             {
-                return dict1.TryRemove(key1, out _) && dict2.TryRemove(key2, out _);
+                return dict1.TryRemove(key1, out value) && dict2.TryRemove(key2, out _);
             }
         }
     }
