@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Oldsu.Enums
 {
-    public enum Mode
+    public enum Mode : byte
     {
         Standard,
         Taiko,
