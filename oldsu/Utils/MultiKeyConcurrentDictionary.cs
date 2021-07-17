@@ -7,41 +7,7 @@ using System.Threading;
 
 namespace Oldsu.Utils
 {
-    public class MultiKeyConcurrentDictionaryValuesGuard<TValue> : IEnumerable<TValue>, IDisposable
-    {
-        private readonly ReaderWriterLockSlim _rwLock;
-        private readonly IEnumerator<TValue> _enumerable;
 
-        public MultiKeyConcurrentDictionaryValuesGuard(ReaderWriterLockSlim rwLock, IEnumerator<TValue> enumerable)
-        {
-            _rwLock = rwLock;
-            _rwLock.EnterReadLock();
-
-            _enumerable = enumerable;
-        }
-
-        public IEnumerator<TValue> GetEnumerator()
-        {
-            return _enumerable;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private bool _disposed = false;
-        
-        public void Dispose()
-        {
-            if (_disposed) return;
-            
-            _rwLock.ExitReadLock();
-            _disposed = true;
-            
-            GC.SuppressFinalize(this);
-        }
-    }
     
     public class MultiKeyConcurrentDictionary<TKey1, TKey2, TValue>
         where TKey1 : notnull
@@ -56,8 +22,7 @@ namespace Oldsu.Utils
             _rwLock = new ReaderWriterLockSlim();
         }
 
-        public MultiKeyConcurrentDictionaryValuesGuard<TValue> Values => 
-            new(_rwLock, _dict1.Values.GetEnumerator());
+        public RwLockableEnumerable<TValue> Values => new(_rwLock, _dict1.Values);
 
         private readonly ReaderWriterLockSlim _rwLock;
         
