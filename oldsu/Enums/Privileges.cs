@@ -9,7 +9,7 @@ namespace Oldsu.Enums
     {
         Normal = 1,
         GMT = 2,
-        BAT = 4,
+        Supporter = 4,
         Developer = 8
     }
 
