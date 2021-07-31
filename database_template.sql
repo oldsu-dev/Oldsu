@@ -1,3 +1,5 @@
+use oldsu;
+
 CREATE TABLE `oldsu`.`AvailableChannels` (
   `Tag` varchar(32) NOT NULL,
   `Topic` varchar(96) NOT NULL,
@@ -6,7 +8,7 @@ CREATE TABLE `oldsu`.`AvailableChannels` (
   `Autojoin` tinyint unsigned NOT NULL,
   PRIMARY KEY (`Tag`),
   UNIQUE KEY `Tag_UNIQUE` (`Tag`)
-)
+);
 
 CREATE TABLE `Users` (
   `UserID` int unsigned NOT NULL AUTO_INCREMENT,
@@ -132,4 +134,4 @@ CREATE TABLE `Userpages` (
 INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#osu', 'Discussion in English.', '0', '1', '1');
 INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#announce', 'Announces for recent activities.', '0', '1', '0');
 INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#finnish', 'Discussion in finnish.', '0', '0', '1');
-INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`) VALUES ('#staff', 'Staff-chat.', '8', '1');
+INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#staff', 'Staff-chat.', '8', '1', '1');
