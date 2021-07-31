@@ -5,8 +5,9 @@ using System.Text;
 namespace Oldsu.Enums
 {
     public enum Version
-    {
+    {        
+        NotApplicable,
         B394A,
-        NotApplicable
+        B904,
     }
 }

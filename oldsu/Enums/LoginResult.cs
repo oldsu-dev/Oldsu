@@ -1,4 +1,4 @@
-﻿namespace osuserver2012.Enums
+﻿namespace Oldsu.Enums
 {
     public enum LoginResult
     {
