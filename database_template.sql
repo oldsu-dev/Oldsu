@@ -1,3 +1,10 @@
+CREATE TABLE `oldsu`.`AvailableChannels` (
+  `Tag` VARCHAR(32) NOT NULL,
+  `RequiredPrivileges` INT UNSIGNED NOT NULL,
+  `Autojoin` TINYINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`Tag`),
+  UNIQUE INDEX `Tag_UNIQUE` (`Tag` ASC) VISIBLE);
+
 CREATE TABLE `Users` (
   `UserID` int unsigned NOT NULL AUTO_INCREMENT,
   `Username` varchar(32) NOT NULL,
