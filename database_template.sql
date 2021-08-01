@@ -1,9 +1,14 @@
+use oldsu;
+
 CREATE TABLE `oldsu`.`AvailableChannels` (
-  `Tag` VARCHAR(32) NOT NULL,
-  `RequiredPrivileges` INT UNSIGNED NOT NULL,
-  `Autojoin` TINYINT UNSIGNED NOT NULL,
+  `Tag` varchar(32) NOT NULL,
+  `Topic` varchar(96) NOT NULL,
+  `RequiredPrivileges` int unsigned NOT NULL,
+  `CanWrite` tinyint unsigned NOT NULL,
+  `Autojoin` tinyint unsigned NOT NULL,
   PRIMARY KEY (`Tag`),
-  UNIQUE INDEX `Tag_UNIQUE` (`Tag` ASC) VISIBLE);
+  UNIQUE KEY `Tag_UNIQUE` (`Tag`)
+);
 
 CREATE TABLE `Users` (
   `UserID` int unsigned NOT NULL AUTO_INCREMENT,
@@ -126,4 +131,7 @@ CREATE TABLE `Userpages` (
   CONSTRAINT `fk_userid` FOREIGN KEY (`UserID`) REFERENCES `Users` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#osu', 'Discussion in English.', '0', '1', '1');
+INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#announce', 'Announces for recent activities.', '0', '1', '0');
+INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#finnish', 'Discussion in finnish.', '0', '0', '1');
+INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#staff', 'Staff-chat.', '8', '1', '1');

@@ -9,12 +9,12 @@ namespace Oldsu.Utils
 {
 
     
-    public class MultiKeyConcurrentDictionary<TKey1, TKey2, TValue>
+    public class MultiKeyDictionary<TKey1, TKey2, TValue>
         where TKey1 : notnull
         where TKey2 : notnull
         where TValue : notnull
     {
-        public MultiKeyConcurrentDictionary()
+        public MultiKeyDictionary()
         {
             _dict1 = new Dictionary<TKey1, TValue>();
             _dict2 = new Dictionary<TKey2, TValue>();
@@ -22,7 +22,7 @@ namespace Oldsu.Utils
             _rwLock = new ReaderWriterLockSlim();
         }
 
-        public RwLockableEnumerable<TValue> Values => new(_rwLock, _dict1.Values);
+        public IEnumerable<TValue> Values => _dict1.Values;
 
         private readonly ReaderWriterLockSlim _rwLock;
         
