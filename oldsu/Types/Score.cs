@@ -30,6 +30,7 @@ namespace Oldsu.Types
         public bool Perfect { get; set; }
         public bool Passed { get; set; }
         public bool Ranked { get; set; }
+        public byte Gamemode { get; set; }
 
         public DateTime SubmittedAt { get; set; }
     }
