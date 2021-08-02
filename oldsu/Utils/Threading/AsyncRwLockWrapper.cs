@@ -24,17 +24,10 @@ namespace Oldsu.Utils.Threading
         }
     }
     
-    public class AsyncRwLockWrapper<T>
+    public class AsyncRwLockWrapper<T> where T: new()
     {
         private readonly AsyncReaderWriterLock _rwLock;
         private T _value;
-
-        public bool IsNull => _value == null;
-
-        public AsyncRwLockWrapper()
-        {
-            _rwLock = new AsyncReaderWriterLock();
-        }
 
         // 5 seconds max lock to prevent deadlocks or performance bottlenecks.
         private const int MaxLockDelay = 5000;
@@ -42,9 +35,9 @@ namespace Oldsu.Utils.Threading
         private static CancellationToken GetTimeoutCancellationToken() =>
             new CancellationTokenSource(MaxLockDelay).Token;
 
-        public AsyncRwLockWrapper(T value) : this()
+        public AsyncRwLockWrapper()
         {
-            _value = value;
+            _value = new T();
         }
 
         public async Task<AsyncRwLockGuard<T>> AcquireWriteLockGuard() => 
