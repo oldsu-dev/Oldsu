@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,7 @@ namespace Oldsu.Types
 
         public uint UserId { get; set; }
         public virtual User User { get; set; }
-        
+
         public string BeatmapHash { get; set; }
 
         public ulong Score { get; set; }
@@ -33,5 +35,34 @@ namespace Oldsu.Types
         public byte Gamemode { get; set; }
 
         public DateTime SubmittedAt { get; set; }
+
+        private int _rank;
+
+        // todo remove asenumerable not production ready
+        [NotMapped]
+        public int Rank
+        {
+            get
+            {
+                return new Database().Scores
+                    .Where(s => s.BeatmapHash.Equals(BeatmapHash) &&
+                                s.Gamemode.Equals(Gamemode))
+                    .OrderByDescending(s => s.Score)
+                    .AsEnumerable()
+                    .Select((entry, index) => new ScoreRow { UserId = entry.UserId, Rank = index + 1 })
+                    .First(s => s.UserId == UserId)
+                    .Rank;
+            }
+            set => throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///     Used for GetScores endpoint to convert the Score object into a string.
+        /// </summary>
+        /// <returns>A osu-friendly format of a score</returns>
+        public override string ToString() =>
+            $"{ScoreId}|{User.Username}|{Score}|{MaxCombo}|{Hit50}|{Hit100}|" +
+            $"{Hit300}|{HitMiss}|{HitKatu}|{HitGeki}|{(Perfect ? 1 : 0)}|{Mods}|" +
+            $"{UserId}|{Rank}|1\n";
     }
 }
