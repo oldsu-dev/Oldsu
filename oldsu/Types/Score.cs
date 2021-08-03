@@ -13,7 +13,7 @@ namespace Oldsu.Types
         public uint ScoreId { get; set; }
 
         public uint UserId { get; set; }
-        public virtual User User { get; set; }
+        public virtual UserInfo User { get; set; }
 
         public string BeatmapHash { get; set; }
 
