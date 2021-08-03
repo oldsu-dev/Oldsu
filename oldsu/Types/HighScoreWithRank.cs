@@ -1,7 +1,9 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace Oldsu.Types
 {
+    [Keyless]
     public class HighScoreWithRank
     {
         public uint ScoreId { get; set; }
