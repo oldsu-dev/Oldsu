@@ -1,19 +1,17 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace Oldsu.Types
 {
     [Keyless]
-    public class ScoreRow
+    public class HighScoreWithRank
     {
         public uint ScoreId { get; set; }
 
         public uint UserId { get; set; }
         public virtual User User { get; set; }
+
+        public ulong Rank { get; set; }
 
         public string BeatmapHash { get; set; }
 
@@ -35,5 +33,14 @@ namespace Oldsu.Types
         public byte Gamemode { get; set; }
 
         public DateTime SubmittedAt { get; set; }
+
+        /// <summary>
+        ///     Used for GetScores endpoint to convert the Score object into a string.
+        /// </summary>
+        /// <returns>A osu-friendly format of a score</returns>
+        public override string ToString() =>
+            $"{ScoreId}|{User.Username}|{Score}|{MaxCombo}|{Hit50}|{Hit100}|" +
+            $"{Hit300}|{HitMiss}|{HitKatu}|{HitGeki}|{(Perfect ? 1 : 0)}|{Mods}|" +
+            $"{UserId}|{Rank}|1\n";
     }
 }

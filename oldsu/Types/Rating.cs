@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Oldsu.Types
 {
+    [Keyless]
     public class Rating
     {
         public int UserID { get; set; }
