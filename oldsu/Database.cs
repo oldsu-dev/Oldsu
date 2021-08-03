@@ -37,6 +37,7 @@ namespace Oldsu
         public DbSet<Channel> AvailableChannels { get; set; }
 
         public DbSet<Beatmap> Beatmaps { get; set; }
+        public DbSet<BeatmapWithScoreCount> BeatmapsWithScoreCount { get; set; }
         public DbSet<Beatmapset> Beatmapsets { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         
