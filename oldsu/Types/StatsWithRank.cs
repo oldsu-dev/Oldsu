@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Oldsu.Enums;
 
 namespace Oldsu.Types
 {
+    [Keyless]
     public class StatsWithRank
     {
         public uint Rank { get; set; }

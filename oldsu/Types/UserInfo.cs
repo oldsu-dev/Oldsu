@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Oldsu.Types
 {
-
-    public class User
+    public class UserInfo
     {
+        [Key]
         public uint UserID { get; set; }
 
         [Required]
@@ -19,7 +19,7 @@ namespace Oldsu.Types
         public byte Country { get; set; }
 
         public bool Banned { get; set; }
-        public string BannedReason { get; set; }
+        public string? BannedReason { get; set; }
 
         [StringLength(256)]
         public string Email { get; set; }
