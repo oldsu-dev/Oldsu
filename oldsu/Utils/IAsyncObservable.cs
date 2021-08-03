@@ -3,8 +3,11 @@ using System.Threading.Tasks;
 
 namespace Oldsu.Utils
 {
-    public interface IAsyncObservable<out T>
+    public interface IAsyncObservable<T>
     {
-        Task<IAsyncDisposable> SubscribeAsync(IAsyncObserver<T> observer);
+        Task<IAsyncDisposable> Subscribe(IAsyncObserver<T> observer);
+        Task Notify(T data);
+        Task Complete();
+        Task Error(Exception exception);
     }
 }

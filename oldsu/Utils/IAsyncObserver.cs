@@ -5,8 +5,8 @@ namespace Oldsu.Utils
 {
     public interface IAsyncObserver<in T>
     {
-        Task OnNextAsync(T value);
-        Task OnErrorAsync(Exception exception);
-        Task OnCompletedAsync();
+        Task OnNext(object? sender, T value);
+        Task OnError(object? sender, Exception exception);
+        Task OnCompleted(object? sender);
     }
 }

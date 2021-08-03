@@ -5,25 +5,6 @@ using Nito.AsyncEx;
 
 namespace Oldsu.Utils.Threading
 {
-    public class AsyncRwLockGuard<T> : IDisposable
-    {
-        private IDisposable _rwLock;
-        public T Value { get; }
-
-        public static T operator ~(AsyncRwLockGuard<T> guard) => guard.Value;
-        
-        internal AsyncRwLockGuard(IDisposable rwLock, T value)
-        {
-            _rwLock = rwLock;
-            Value = value;
-        }
-        
-        public void Dispose()
-        {
-            _rwLock.Dispose();
-        }
-    }
-    
     public class AsyncRwLockWrapper<T> where T: new()
     {
         private readonly AsyncReaderWriterLock _rwLock;
@@ -37,13 +18,14 @@ namespace Oldsu.Utils.Threading
 
         public AsyncRwLockWrapper()
         {
+            _rwLock = new AsyncReaderWriterLock();
             _value = new T();
         }
 
-        public async Task<AsyncRwLockGuard<T>> AcquireWriteLockGuard() => 
+        public async Task<AsyncLockGuard<T>> AcquireWriteLockGuard() => 
             new(await _rwLock.WriterLockAsync(GetTimeoutCancellationToken()), _value);
         
-        public async Task<AsyncRwLockGuard<T>> AcquireReadLockGuard() => 
+        public async Task<AsyncLockGuard<T>> AcquireReadLockGuard() => 
             new(await _rwLock.ReaderLockAsync(GetTimeoutCancellationToken()), _value);
 
         public async Task SetValueAsync(T value)
