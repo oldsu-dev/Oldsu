@@ -33,10 +33,14 @@ namespace Oldsu
 
         public DbSet<User> Users { get; set; }
         public DbSet<Stats> Stats { get; set; }
+        
         public DbSet<Channel> AvailableChannels { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
+
         public DbSet<Beatmap> Beatmaps { get; set; }
         public DbSet<Beatmapset> Beatmapsets { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+        
         public DbSet<ScoreRow> Scores { get; set; }
+        public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
     }
 }
