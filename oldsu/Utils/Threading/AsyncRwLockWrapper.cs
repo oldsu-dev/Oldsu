@@ -1,11 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using Nito.AsyncEx;
 
 namespace Oldsu.Utils.Threading
 {
-    public class AsyncRwLockWrapper<T> where T: new()
+    public class AsyncRwLockWrapper<T>
     {
         private readonly AsyncReaderWriterLock _rwLock;
         private T _value;
@@ -19,7 +20,12 @@ namespace Oldsu.Utils.Threading
         public AsyncRwLockWrapper()
         {
             _rwLock = new AsyncReaderWriterLock();
-            _value = new T();
+            _value = default!;
+        }
+        
+        public AsyncRwLockWrapper(T value) : this()
+        {
+            _value = value;
         }
 
         public async Task<AsyncLockGuard<T>> AcquireWriteLockGuard() => 

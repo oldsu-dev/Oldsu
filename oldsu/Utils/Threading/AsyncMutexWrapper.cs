@@ -5,7 +5,7 @@ using Nito.AsyncEx;
 
 namespace Oldsu.Utils.Threading
 {
-    public class AsyncMutexWrapper<T> where T: new()
+    public class AsyncMutexWrapper<T>
     {
         private readonly AsyncLock _lock;
         private T _value;
@@ -19,7 +19,12 @@ namespace Oldsu.Utils.Threading
         public AsyncMutexWrapper()
         {
             _lock = new AsyncLock();
-            _value = new T();
+            _value = default!;
+        }
+        
+        public AsyncMutexWrapper(T value) : this()
+        {
+            _value = value;
         }
 
         public async Task<AsyncLockGuard<T>> AcquireLockGuard() => 
