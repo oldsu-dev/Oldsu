@@ -59,7 +59,7 @@ namespace Oldsu.Utils.Cache
         }
 
         private void StartFindAndDestroyJob() =>
-            Task.Run(async () => FindAndDestroyExpiredEntries());
+            Task.Run(async () => await FindAndDestroyExpiredEntries());
 
         // prevent for 2 unnecessary checks to launch at the same time.
         private volatile bool _checkingForExpiredEntries = false;
