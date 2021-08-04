@@ -7,7 +7,7 @@ namespace Oldsu.Utils.Threading
         private IDisposable _lock;
         public T Value { get; }
 
-        public static T operator ~(AsyncLockGuard<T> guard) => guard.Value;
+        public static T operator -(AsyncLockGuard<T> guard) => guard.Value;
         
         internal AsyncLockGuard(IDisposable @lock, T value)
         {

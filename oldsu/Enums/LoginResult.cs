@@ -2,6 +2,7 @@
 {
     public enum LoginResult
     {
+        AlreadyConnected,
         TestBuildButNotSupporter = -6,
         ServerSideError = -5,
         AccountNotActivated = -4,
