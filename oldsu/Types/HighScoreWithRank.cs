@@ -9,7 +9,7 @@ namespace Oldsu.Types
         public uint ScoreId { get; set; }
 
         public uint UserId { get; set; }
-        public virtual UserInfo User { get; set; }
+        public virtual UserInfo UserInfo { get; set; }
 
         public ulong Rank { get; set; }
 
@@ -39,7 +39,7 @@ namespace Oldsu.Types
         /// </summary>
         /// <returns>A osu-friendly format of a score</returns>
         public override string ToString() =>
-            $"{ScoreId}|{User.Username}|{Score}|{MaxCombo}|{Hit50}|{Hit100}|" +
+            $"{ScoreId}|{UserInfo.Username}|{Score}|{MaxCombo}|{Hit50}|{Hit100}|" +
             $"{Hit300}|{HitMiss}|{HitKatu}|{HitGeki}|{(Perfect ? 1 : 0)}|{Mods}|" +
             $"{UserId}|{Rank}|1\n";
     }
