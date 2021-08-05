@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -15,39 +16,47 @@ namespace Oldsu.Utils.Cache
     {
         private AsyncRwLockWrapper<Dictionary<object, CacheEntry>> _cacheEntriesLocked = new();
 
-        public async Task<CacheResult> TryGetValue(object key)
+        public AsyncDictionaryWithExpiration(CancellationToken expirationCt = default)
+        {
+            Task.Factory.StartNew(async () => await ExpiredEntriesWatchDog(expirationCt));
+        }
+
+        public async Task<(bool, object?)> TryGetValue(object key)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
             
-            var cacheResult = new CacheResult();
             CacheEntry cacheEntry = default;
+            bool isFound;
 
-            cacheResult.IsFound = await _cacheEntriesLocked.ReadAsync(cache =>
+            isFound = await _cacheEntriesLocked.ReadAsync(cache =>
                 cache.TryGetValue(key, out cacheEntry));
 
-            if (cacheEntry.IsExpired)
-                cacheResult.IsFound = false;
+            return (isFound, cacheEntry.Value);
+        }
+        
+        public async Task<bool> TryAdd(object key, object value, DateTime expirationAt)
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
 
-            StartFindAndDestroyJob();
+            var cacheEntry = CreateCacheEntry(value, expirationAt);
             
-            return cacheResult;
+            var isAlreadyInDictionary = await _cacheEntriesLocked.WriteAsync(cache =>
+                cache.TryAdd(key, cacheEntry));
+
+            return isAlreadyInDictionary;
         }
 
-        public async Task TryAdd(object key, object value)
+        public async Task<bool> TryRemove(object key)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
             
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            var wasRemoved = await _cacheEntriesLocked.WriteAsync(cache =>
+                cache.Remove(key));
 
-            StartFindAndDestroyJob();
-        }
-
-        public void TryRemove(object key)
-        {
-            StartFindAndDestroyJob();
+            return wasRemoved;
         }
 
         private static CacheEntry CreateCacheEntry(object value, DateTime expirationTime)
@@ -58,33 +67,21 @@ namespace Oldsu.Utils.Cache
             return new CacheEntry(value, expirationTime);
         }
 
-        private void StartFindAndDestroyJob() =>
-            Task.Run(async () => await FindAndDestroyExpiredEntries());
-
-        // prevent for 2 unnecessary checks to launch at the same time.
-        private volatile bool _checkingForExpiredEntries = false;
-
-        private async Task FindAndDestroyExpiredEntries()
+        private async Task ExpiredEntriesWatchDog(CancellationToken ct)
         {
-            if (_checkingForExpiredEntries)
-                return;
-
-            _checkingForExpiredEntries = true;
-
-            await _cacheEntriesLocked.WriteAsync(cache =>
+            for (;;)
             {
-                foreach (var entry in cache)
-                    if (entry.Value.IsExpired)
-                        cache.Remove(entry.Key);
-            });
+                ct.ThrowIfCancellationRequested();
 
-            _checkingForExpiredEntries = false;
+                await _cacheEntriesLocked.WriteAsync(cache =>
+                {
+                    foreach (var entry in cache)
+                        if (entry.Value.IsExpired)
+                            cache.Remove(entry.Key);
+                });
+
+                await Task.Delay(1000, ct);
+            }
         }
-    }
-
-    public struct CacheResult
-    {
-        public bool IsFound { get; set; }
-        public object? Value { get; set; }
     }
 }
