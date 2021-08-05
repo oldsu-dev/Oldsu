@@ -12,16 +12,16 @@ using Oldsu.Utils.Threading;
 namespace Oldsu.Utils.Cache
 {
     // note not thread safe. 
-    public class AsyncDictionaryWithExpiration
+    public class AsyncDictionaryWithExpiration<T1> // key type
     {
-        private AsyncRwLockWrapper<Dictionary<object, CacheEntry>> _cacheEntriesLocked = new();
+        private AsyncRwLockWrapper<Dictionary<T1, CacheEntry>> _cacheEntriesLocked = new(new ());
 
         public AsyncDictionaryWithExpiration(CancellationToken expirationCt = default)
         {
             Task.Factory.StartNew(async () => await ExpiredEntriesWatchDog(expirationCt));
         }
 
-        public async Task<(bool, object?)> TryGetValue(object key)
+        public async Task<(bool, object?)> TryGetValue(T1 key)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
@@ -35,7 +35,7 @@ namespace Oldsu.Utils.Cache
             return (isFound, cacheEntry.Value);
         }
         
-        public async Task<bool> TryAdd(object key, object value, DateTime expirationAt)
+        public async Task<bool> TryAdd(T1 key, object value, DateTime expirationAt)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
@@ -48,7 +48,7 @@ namespace Oldsu.Utils.Cache
             return isAlreadyInDictionary;
         }
 
-        public async Task<bool> TryRemove(object key)
+        public async Task<bool> TryRemove(T1 key)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
