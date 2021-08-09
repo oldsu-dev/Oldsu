@@ -1,11 +1,14 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Oldsu.Types
 {
-    [Keyless]
     public class HighScoreWithRank
     {
+        [Key]
         public uint ScoreId { get; set; }
 
         public uint UserId { get; set; }
@@ -14,6 +17,7 @@ namespace Oldsu.Types
         public ulong Rank { get; set; }
 
         public string BeatmapHash { get; set; }
+        public string SubmitHash { get; set; }
 
         public ulong Score { get; set; }
         public uint MaxCombo { get; set; }
