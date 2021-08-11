@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Oldsu.Types;
 using System;
 using System.Linq;
@@ -51,5 +51,7 @@ namespace Oldsu
         
         public DbSet<ScoreRow> Scores { get; set; }
         public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
+
+        public DbSet<Friendship> Friendships { get; set; }
     }
 }
