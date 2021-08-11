@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Oldsu.Types
 {
-    [Keyless]
     public class Stats
     {
+        [Key]
         public int UserID { get; set; }
 
         [Required]
