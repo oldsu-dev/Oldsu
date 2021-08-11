@@ -1,6 +1,4 @@
-use oldsu;
-
-CREATE TABLE `oldsu`.`AvailableChannels` (
+CREATE TABLE `AvailableChannels` (
   `Tag` varchar(32) NOT NULL,
   `Topic` varchar(96) NOT NULL,
   `RequiredPrivileges` int unsigned NOT NULL,
@@ -141,7 +139,7 @@ CREATE TABLE `Userpages` (
 
 CREATE VIEW `StatsWithRank` AS select row_number() OVER (PARTITION BY `st`.`Mode` ORDER BY `st`.`RankedScore` )  AS `Rank`,`st`.`UserID` AS `UserID`,`st`.`Mode` AS `Mode`,`st`.`RankedScore` AS `RankedScore`,`st`.`TotalScore` AS `TotalScore`,`st`.`UserLevel` AS `UserLevel`,`st`.`Accuracy` AS `Accuracy`,`st`.`Playcount` AS `Playcount`,`st`.`CountSSH` AS `CountSSH`,`st`.`CountSS` AS `CountSS`,`st`.`CountSH` AS `CountSH`,`st`.`CountS` AS `CountS`,`st`.`CountA` AS `CountA`,`st`.`CountB` AS `CountB`,`st`.`CountC` AS `CountC`,`st`.`CountD` AS `CountD`,`st`.`Hit300` AS `Hit300`,`st`.`Hit100` AS `Hit100`,`st`.`Hit50` AS `Hit50`,`st`.`HitMiss` AS `HitMiss` from `Stats` `st`;
 
-INSERT INTO AvailableChannels (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#osu', 'Discussion in English.', '0', '1', '1');
-INSERT INTO AvailableChannels (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#announce', 'Announces for recent activities.', '0', '1', '0');
-INSERT INTO AvailableChannels (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#finnish', 'Discussion in finnish.', '0', '0', '1');
-INSERT INTO AvailableChannels (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#staff', 'Staff-chat.', '8', '1', '1');
+INSERT INTO `AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#osu', 'Discussion in English.', '0', '1', '1');
+INSERT INTO `AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#announce', 'Announces for recent activities.', '0', '1', '0');
+INSERT INTO `AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#finnish', 'Discussion in finnish.', '0', '0', '1');
+INSERT INTO `AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#staff', 'Staff-chat.', '8', '1', '1');
