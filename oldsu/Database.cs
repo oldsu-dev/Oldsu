@@ -29,9 +29,9 @@ namespace Oldsu
             ).FirstOrDefaultAsync();
         }
         
-        public async Task RegisterAsync(string username, string email, string password, string country) =>
+        public async Task RegisterAsync(string username, string email, string password, byte country) =>
             await this.Database.ExecuteSqlRawAsync(
-               @"INSERT INTO `oldsu_test`.`UserInfo`
+               @"INSERT INTO `oldsu`.`UserInfo`
                (`Username`, `Email`, `Password`, `Country`) 
                VALUES
                ({0}, {1}, {2}, {3});",
@@ -52,6 +52,6 @@ namespace Oldsu
         public DbSet<ScoreRow> Scores { get; set; }
         public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
 
-        public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<Friendship> Friends { get; set; }
     }
 }
