@@ -1,13 +1,15 @@
+using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Oldsu.Enums;
 
 namespace Oldsu.Types
 {
-    [Keyless]
     public class StatsWithRank
     {
         public uint Rank { get; set; }
         
+        [Key]
         public int UserID { get; set; }
 
         public Mode Mode { get; set; }
