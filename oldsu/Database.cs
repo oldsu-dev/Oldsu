@@ -39,6 +39,37 @@ namespace Oldsu
                username, email, password, country
             );
 
+        public async Task AddStatsAsync(uint userid, byte gamemode) =>
+            await this.Database.ExecuteSqlRawAsync(
+                @"INSERT INTO `oldsu`.`Stats`
+               (`userid`, `Mode`) 
+               VALUES
+               ({0}, {1});",
+
+                userid, gamemode
+            );
+
+        public async Task TestAddMapAsync(string hash)
+        {
+            await this.Database.ExecuteSqlRawAsync(
+                $@"INSERT INTO `oldsu`.`BeatmapSets`
+               (`Artist`, `Title`, `Source`, `Tags`, `RankingStatus`) 
+               VALUES
+               ('', '{hash}', '', '', 2);"
+            );
+
+            var beatmapset = await Beatmapsets
+                .Where(b => b.Title == hash)
+                .FirstAsync();
+
+            await this.Database.ExecuteSqlRawAsync(
+                @$"INSERT INTO `oldsu`.`Beatmaps`
+               (`BeatmapHash`, `BeatmapSetID`, `HP`, `CS`, `OD`, `SR`,`BPM`,`SliderMultiplier`,`Mode`,`Rating`) 
+               VALUES
+               ('{hash}', '{beatmapset.BeatmapsetID}', 0, 0, 0, 0, 0, 0, 0, 0);"
+            );
+        }
+
         public DbSet<UserInfo> UserInfo { get; set; }
         public DbSet<Stats> Stats { get; set; }
         
