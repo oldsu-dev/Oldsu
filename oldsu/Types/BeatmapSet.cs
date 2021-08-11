@@ -6,6 +6,8 @@ namespace Oldsu.Types
 
         public uint? CreatorID { get; set; }
 
+        public string Title { get; set; }
+
         public byte RankingStatus { get; set; }
     }
 }
