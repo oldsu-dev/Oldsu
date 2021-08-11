@@ -24,6 +24,14 @@ CREATE TABLE `UserInfo` (
   UNIQUE KEY `UserID_UNIQUE` (`UserID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `OffenceHistory` (
+  `UserID` INT UNSIGNED NOT NULL,
+  `Offence` TEXT NOT NULL,
+  `OffenceAt` DATETIME NOT NULL,
+  `Action` TINYINT(10) NOT NULL,
+  `ExpirationAt` DATETIME NULL COMMENT 'null if ban',
+  PRIMARY KEY (`UserID`));
+
 CREATE TABLE `Beatmapsets` (
   `BeatmapsetID` int NOT NULL AUTO_INCREMENT,
   `CreatorID` int unsigned NOT NULL,
