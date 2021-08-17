@@ -22,6 +22,23 @@ CREATE TABLE `UserInfo` (
   UNIQUE KEY `UserID_UNIQUE` (`UserID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+CREATE TABLE `Friends` (
+  `UserID` INT UNSIGNED NOT NULL,
+  `FriendUserID` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`UserID`),
+  INDEX `fk_friends_friend_userid_idx` (`FriendUserID` ASC) VISIBLE,
+  CONSTRAINT `fk_friends_userid`
+    FOREIGN KEY (`UserID`)
+    REFERENCES `UserInfo` (`UserID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_friends_friend_userid`
+    FOREIGN KEY (`FriendUserID`)
+    REFERENCES `UserInfo`  (`UserID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
 CREATE TABLE `OffenceHistory` (
   `UserID` INT UNSIGNED NOT NULL,
   `Offence` TEXT NOT NULL,
