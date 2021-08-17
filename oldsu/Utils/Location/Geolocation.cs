@@ -27,7 +27,7 @@ namespace Oldsu.Utils.Location
                 var country = (Dictionary<string, object>)data["country"];
                 var location = (Dictionary<string, object>)data["location"];
 
-                byte countryByte = CountryCodes.ToCode.GetValueOrDefault((string) data["iso_code"], (byte)0); // 0 = Unknown/Non-recognized.
+                byte countryByte = CountryCodes.ToCode.GetValueOrDefault((string) country["iso_code"], (byte)0); // 0 = Unknown/Non-recognized.
 
                 return (Convert.ToSingle(location["latitude"]), Convert.ToSingle(location["longitude"]), countryByte);
             }
