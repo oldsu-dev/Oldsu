@@ -1,11 +1,14 @@
-CREATE TABLE `oldsu`.`AvailableChannels` (
-  `Tag` VARCHAR(32) NOT NULL,
-  `RequiredPrivileges` INT UNSIGNED NOT NULL,
-  `Autojoin` TINYINT UNSIGNED NOT NULL,
+CREATE TABLE `AvailableChannels` (
+  `Tag` varchar(32) NOT NULL,
+  `Topic` varchar(96) NOT NULL,
+  `RequiredPrivileges` int unsigned NOT NULL,
+  `CanWrite` tinyint unsigned NOT NULL,
+  `Autojoin` tinyint unsigned NOT NULL,
   PRIMARY KEY (`Tag`),
-  UNIQUE INDEX `Tag_UNIQUE` (`Tag` ASC) VISIBLE);
+  UNIQUE KEY `Tag_UNIQUE` (`Tag`)
+);
 
-CREATE TABLE `Users` (
+CREATE TABLE `UserInfo` (
   `UserID` int unsigned NOT NULL AUTO_INCREMENT,
   `Username` varchar(32) NOT NULL,
   `Password` char(64) NOT NULL,
@@ -20,6 +23,30 @@ CREATE TABLE `Users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
+CREATE TABLE `Friends` (
+  `UserID` INT UNSIGNED NOT NULL,
+  `FriendUserID` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`UserID`),
+  INDEX `fk_friends_friend_userid_idx` (`FriendUserID` ASC) VISIBLE,
+  CONSTRAINT `fk_friends_userid`
+    FOREIGN KEY (`UserID`)
+    REFERENCES `UserInfo` (`UserID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_friends_friend_userid`
+    FOREIGN KEY (`FriendUserID`)
+    REFERENCES `UserInfo`  (`UserID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
+CREATE TABLE `OffenceHistory` (
+  `UserID` INT UNSIGNED NOT NULL,
+  `Offence` TEXT NOT NULL,
+  `OffenceAt` DATETIME NOT NULL,
+  `Action` TINYINT(10) NOT NULL,
+  `ExpirationAt` DATETIME NULL COMMENT 'null if ban',
+  PRIMARY KEY (`UserID`));
+
 CREATE TABLE `Beatmapsets` (
   `BeatmapsetID` int NOT NULL AUTO_INCREMENT,
   `CreatorID` int unsigned NOT NULL,
@@ -33,7 +60,7 @@ CREATE TABLE `Beatmapsets` (
   PRIMARY KEY (`BeatmapsetID`),
   UNIQUE KEY `BeatmapsetID_UNIQUE` (`BeatmapsetID`),
   KEY `fk_beatmapset_creator_id_idx` (`CreatorID`),
-  CONSTRAINT `fk_beatmapset_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `Users` (`UserID`)
+  CONSTRAINT `fk_beatmapset_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `UserInfo` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -41,7 +68,7 @@ CREATE TABLE `Badges` (
   `UserID` int unsigned NOT NULL,
   `Filename` tinytext NOT NULL,
   KEY `fk_bages_user_id_idx` (`UserID`),
-  CONSTRAINT `fk_badges_user_id` FOREIGN KEY (`UserID`) REFERENCES `Users` (`UserID`) ON DELETE CASCADE
+  CONSTRAINT `fk_badges_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Beatmaps` (
@@ -86,7 +113,7 @@ CREATE TABLE `Scores` (
   KEY `fk_user_id_idx` (`BeatmapHash`),
   KEY `fk_beatmap_hash_idx` (`UserID`) /*!80000 INVISIBLE */,
   CONSTRAINT `fk_scores_beatmap_hash` FOREIGN KEY (`BeatmapHash`) REFERENCES `Beatmaps` (`BeatmapHash`),
-  CONSTRAINT `fk_scores_user_id` FOREIGN KEY (`UserID`) REFERENCES `Users` (`UserID`) ON DELETE CASCADE
+  CONSTRAINT `fk_scores_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Stats` (
@@ -111,7 +138,7 @@ CREATE TABLE `Stats` (
   `HitMiss` bigint unsigned NOT NULL DEFAULT '0',
   UNIQUE KEY `stat_UNIQUE` (`UserID`,`Mode`),
   KEY `user_id_idx` (`UserID`) /*!80000 INVISIBLE */,
-  CONSTRAINT `fk_user_id` FOREIGN KEY (`UserID`) REFERENCES `Users` (`UserID`) ON DELETE CASCADE
+  CONSTRAINT `fk_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Userpages` (
@@ -123,14 +150,12 @@ CREATE TABLE `Userpages` (
   `Twitter` tinytext,
   `Discord` tinytext,
   UNIQUE KEY `UserID_UNIQUE` (`UserID`),
-  CONSTRAINT `fk_userid` FOREIGN KEY (`UserID`) REFERENCES `Users` (`UserID`) ON DELETE CASCADE
+  CONSTRAINT `fk_userid` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE VIEW `HighScoresWithRank` AS with `gt` as (select `Scores`.`Gamemode` AS `Gamemode`,`Scores`.`BeatmapHash` AS `BeatmapHash`,`Scores`.`UserID` AS `UserID`,max(`Scores`.`Score`) AS `MaxScore` from `Scores` where (0 <> `Scores`.`Passed`) group by `Scores`.`UserID`,`Scores`.`BeatmapHash`,`Scores`.`Gamemode`) select row_number() OVER (PARTITION BY `s`.`BeatmapHash`,`s`.`Gamemode` ORDER BY `s`.`Score` desc )  AS `Rank`,`s`.`ScoreID` AS `ScoreID`,`s`.`BeatmapHash` AS `BeatmapHash`,`s`.`UserID` AS `UserID`,`s`.`Score` AS `Score`,`s`.`MaxCombo` AS `MaxCombo`,`s`.`Hit300` AS `Hit300`,`s`.`Hit100` AS `Hit100`,`s`.`Hit50` AS `Hit50`,`s`.`HitMiss` AS `HitMiss`,`s`.`HitGeki` AS `HitGeki`,`s`.`HitKatu` AS `HitKatu`,`s`.`Mods` AS `Mods`,`s`.`Grade` AS `Grade`,`s`.`Perfect` AS `Perfect`,`s`.`Passed` AS `Passed`,`s`.`Ranked` AS `Ranked`,`s`.`SubmitHash` AS `SubmitHash`,`s`.`SubmittedAt` AS `SubmittedAt`,`s`.`Gamemode` AS `Gamemode` from (select `s`.`ScoreID` AS `ScoreID`,`s`.`BeatmapHash` AS `BeatmapHash`,`s`.`UserID` AS `UserID`,`s`.`Score` AS `Score`,`s`.`MaxCombo` AS `MaxCombo`,`s`.`Hit300` AS `Hit300`,`s`.`Hit100` AS `Hit100`,`s`.`Hit50` AS `Hit50`,`s`.`HitMiss` AS `HitMiss`,`s`.`HitGeki` AS `HitGeki`,`s`.`HitKatu` AS `HitKatu`,`s`.`Mods` AS `Mods`,`s`.`Grade` AS `Grade`,`s`.`Perfect` AS `Perfect`,`s`.`Passed` AS `Passed`,`s`.`Ranked` AS `Ranked`,`s`.`SubmitHash` AS `SubmitHash`,`s`.`SubmittedAt` AS `SubmittedAt`,`s`.`Gamemode` AS `Gamemode` from (`Scores` `s` join `gt` on(((`gt`.`UserID` = `s`.`UserID`) and (`gt`.`MaxScore` = `s`.`Score`) and (`gt`.`BeatmapHash` = `s`.`BeatmapHash`) and (`gt`.`Gamemode` = `s`.`Gamemode`)))) order by `s`.`Score` desc) `s`
 
 CREATE VIEW `StatsWithRank` AS select row_number() OVER (PARTITION BY `st`.`Mode` ORDER BY `st`.`RankedScore` )  AS `Rank`,`st`.`UserID` AS `UserID`,`st`.`Mode` AS `Mode`,`st`.`RankedScore` AS `RankedScore`,`st`.`TotalScore` AS `TotalScore`,`st`.`UserLevel` AS `UserLevel`,`st`.`Accuracy` AS `Accuracy`,`st`.`Playcount` AS `Playcount`,`st`.`CountSSH` AS `CountSSH`,`st`.`CountSS` AS `CountSS`,`st`.`CountSH` AS `CountSH`,`st`.`CountS` AS `CountS`,`st`.`CountA` AS `CountA`,`st`.`CountB` AS `CountB`,`st`.`CountC` AS `CountC`,`st`.`CountD` AS `CountD`,`st`.`Hit300` AS `Hit300`,`st`.`Hit100` AS `Hit100`,`st`.`Hit50` AS `Hit50`,`st`.`HitMiss` AS `HitMiss` from `Stats` `st`;
 
-INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#osu', 'Discussion in English.', '0', '1', '1');
-INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#announce', 'Announces for recent activities.', '0', '1', '0');
-INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#finnish', 'Discussion in finnish.', '0', '0', '1');
-INSERT INTO `oldsu`.`AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#staff', 'Staff-chat.', '8', '1', '1');
-
-
+INSERT INTO `AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#finnish', 'Discussion in finnish.', '0', '0', '1');
+INSERT INTO `AvailableChannels` (`Tag`, `Topic`, `RequiredPrivileges`, `Autojoin`, `CanWrite`) VALUES ('#staff', 'Staff-chat.', '8', '1', '1');
