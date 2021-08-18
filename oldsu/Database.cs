@@ -31,7 +31,7 @@ namespace Oldsu
         
         public async Task RegisterAsync(string username, string email, string password, byte country) =>
             await this.Database.ExecuteSqlRawAsync(
-               @"INSERT INTO `oldsu`.`UserInfo`
+               @"INSERT INTO `UserInfo`
                (`Username`, `Email`, `Password`, `Country`) 
                VALUES
                ({0}, {1}, {2}, {3});",
@@ -41,7 +41,7 @@ namespace Oldsu
 
         public async Task AddStatsAsync(uint userid, byte gamemode) =>
             await this.Database.ExecuteSqlRawAsync(
-                @"INSERT INTO `oldsu`.`Stats`
+                @"INSERT INTO `Stats`
                (`userid`, `Mode`) 
                VALUES
                ({0}, {1});",
@@ -52,7 +52,7 @@ namespace Oldsu
         public async Task TestAddMapAsync(string hash)
         {
             await this.Database.ExecuteSqlRawAsync(
-                $@"INSERT INTO `oldsu`.`BeatmapSets`
+                $@"INSERT INTO `BeatmapSets`
                (`Artist`, `Title`, `Source`, `Tags`, `RankingStatus`) 
                VALUES
                ('', '{hash}', '', '', 2);"
@@ -63,7 +63,7 @@ namespace Oldsu
                 .FirstAsync();
 
             await this.Database.ExecuteSqlRawAsync(
-                @$"INSERT INTO `oldsu`.`Beatmaps`
+                @$"INSERT INTO `Beatmaps`
                (`BeatmapHash`, `BeatmapSetID`, `HP`, `CS`, `OD`, `SR`,`BPM`,`SliderMultiplier`,`Mode`,`Rating`) 
                VALUES
                ('{hash}', '{beatmapset.BeatmapsetID}', 0, 0, 0, 0, 0, 0, 0, 0);"
