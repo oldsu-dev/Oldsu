@@ -11,6 +11,8 @@ namespace Oldsu.Utils.Threading
         private readonly AsyncReaderWriterLock _rwLock;
         private T _value;
 
+        private readonly AsyncLock _upgradeMutex;
+        
         // 5 seconds max lock to prevent deadlocks or performance bottlenecks.
         private const int MaxLockDelay = 5000;
 
@@ -20,7 +22,9 @@ namespace Oldsu.Utils.Threading
         public AsyncRwLockWrapper()
         {
             _rwLock = new AsyncReaderWriterLock();
+            _upgradeMutex = new AsyncLock();
             _value = default!;
+            _upgradeMutex = new AsyncLock();
         }
         
         public AsyncRwLockWrapper(T value) : this()
@@ -28,12 +32,36 @@ namespace Oldsu.Utils.Threading
             _value = value;
         }
 
-        public async Task<AsyncLockGuard<T>> AcquireWriteLockGuard() => 
-            new(await _rwLock.WriterLockAsync(GetTimeoutCancellationToken()), _value);
+        public async Task<AsyncRwLockGuardWrite<T>> AcquireWriteLockGuard() => 
+            new(await _rwLock.WriterLockAsync(GetTimeoutCancellationToken()), this, _value);
         
-        public async Task<AsyncLockGuard<T>> AcquireReadLockGuard() => 
-            new(await _rwLock.ReaderLockAsync(GetTimeoutCancellationToken()), _value);
+        public async Task<AsyncRwLockGuardRead<T>> AcquireReadLockGuard() => 
+            new(await _rwLock.ReaderLockAsync(GetTimeoutCancellationToken()), this, _value);
 
+        public async Task Upgrade(AsyncRwLockGuardRead<T> guard)
+        {
+            if (guard.Locker != this)
+                throw new InvalidOperationException("The lock is not owned by this ReadWriterLock");
+
+            using (await _upgradeMutex.LockAsync())
+            {
+                guard.Lock.Dispose();
+                guard.Lock = await _rwLock.WriterLockAsync(GetTimeoutCancellationToken());
+            }
+        }
+        
+        public async Task Downgrade(AsyncRwLockGuardWrite<T> guard)
+        {
+            if (guard.Locker != this)
+                throw new InvalidOperationException("The lock is not owned by this ReadWriterLock");
+
+            using (await _upgradeMutex.LockAsync())
+            {
+                guard.Lock.Dispose();
+                guard.Lock = await _rwLock.ReaderLockAsync(GetTimeoutCancellationToken());
+            }
+        }
+        
         public async Task SetValueAsync(T value)
         {
             using (await _rwLock.WriterLockAsync(GetTimeoutCancellationToken()))
