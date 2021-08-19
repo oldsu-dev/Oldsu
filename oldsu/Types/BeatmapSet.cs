@@ -8,6 +8,7 @@ namespace Oldsu.Types
         public string CreatorName { get; set; }
 
         public string Title { get; set; }
+        public string Artist { get; set; }
 
         public byte RankingStatus { get; set; }
 
