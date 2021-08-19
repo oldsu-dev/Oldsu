@@ -26,13 +26,14 @@ namespace Oldsu.Logging.Strategies
         {
             return new BsonDocument
             {
+                { "date", DateTime.Now },
                 { "urgency", urgency},
                 { "message", message },
-                { "exception", exception?.ToString() },
+                { "exception", exception?.ToString() ?? (BsonValue)BsonNull.Value },
                 { "type", typeof(T).ToString() },
                 { "line_number", lineNumber },
                 { "caller", caller },
-                { "dump", dump.ToBsonDocument() }
+                { "dump", dump?.ToBsonDocument() ?? (BsonValue)BsonNull.Value }
             };
         }
 
