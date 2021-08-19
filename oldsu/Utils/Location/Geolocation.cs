@@ -17,7 +17,7 @@ namespace Oldsu.Utils.Location
 
         public static async Task<(float, float, byte)> GetGeolocationAsync(string ip)
         {
-            if (ip == "127.0.0.1")
+            if (ip.StartsWith("192.168") || ip.StartsWith("172.16") || ip.StartsWith("127") || ip.StartsWith("10"))
                 return (0, 0, 0);
             
             var data = IpLookupDatabase.Find<Dictionary<string, object>>(IPAddress.Parse(ip));
