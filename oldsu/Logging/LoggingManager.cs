@@ -9,6 +9,8 @@ namespace Oldsu.Logging
 {
     public class LoggingManager
     {
+        public static readonly LoggingManager Empty = new LoggingManager(new NoLog());
+        
         private readonly ILoggerWriterStrategy _logWriterTarget;
 
         public LoggingManager(ILoggerWriterStrategy logTarget)
@@ -18,8 +20,8 @@ namespace Oldsu.Logging
         
         public async Task LogInfo<T>(
             string message, 
-            Exception? exception,
-            object? dump,
+            Exception? exception = null,
+            object? dump = null,
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string caller = null)
         {
@@ -30,8 +32,8 @@ namespace Oldsu.Logging
 
         public async Task LogCritical<T>(
             string message, 
-            Exception? exception,
-            object? dump,
+            Exception? exception = null,
+            object? dump = null,
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string caller = null)
         {
@@ -42,8 +44,8 @@ namespace Oldsu.Logging
         
         public async Task LogFatal<T>(
             string message, 
-            Exception? exception,
-            object? dump,
+            Exception? exception = null,
+            object? dump = null,
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string caller = null)
         {
