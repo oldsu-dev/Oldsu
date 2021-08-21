@@ -27,7 +27,8 @@ namespace Oldsu.Utils
         {
             await using var db = new Database();
 
-            var updatingStats = await db.Stats.FirstOrDefaultAsync(s => s.UserID == stats.UserID);
+            var updatingStats = await db.Stats.FirstOrDefaultAsync(s => s.UserID == stats.UserID &&
+                                                                        s.Mode == stats.Mode);
 
             updatingStats.TotalScore = stats.TotalScore;
             updatingStats.RankedScore = stats.RankedScore;
