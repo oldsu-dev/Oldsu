@@ -27,7 +27,7 @@ namespace Oldsu
         public async Task<UserInfo?> AuthenticateAsync(string username, string passwordHash)
         {
             var authenticationPair = await this.AuthenticationPairs
-                .Where(auth => auth.User.Username == username).FirstOrDefaultAsync();
+                .Where(auth => auth.User.Username == username).Include(auth => auth.User).FirstOrDefaultAsync();
 
             if (authenticationPair == null)
                 return null;
