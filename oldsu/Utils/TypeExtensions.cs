@@ -17,29 +17,11 @@ namespace Oldsu.Utils
             stats.Hit100 += score.Hit100;
             stats.Hit50 += score.Hit50;
             stats.HitMiss += score.HitMiss;
+            stats.Playcount++;
             
             stats.Accuracy = (float)Math.Round(
                 (double)(stats.Hit50 * 50 + stats.Hit100 * 100 + stats.Hit300 * 300) / (double)((stats.Hit300 + stats.Hit100 + stats.Hit50) * 300) * 100,
                 2);
-        }
-
-        public static async Task SaveChangesAsync(this StatsWithRank stats)
-        {
-            await using var db = new Database();
-
-            var updatingStats = await db.Stats.FirstOrDefaultAsync(s => s.UserID == stats.UserID &&
-                                                                        s.Mode == stats.Mode);
-
-            updatingStats.TotalScore = stats.TotalScore;
-            updatingStats.RankedScore = stats.RankedScore;
-            updatingStats.Playcount = stats.Playcount;
-            updatingStats.Accuracy = stats.Accuracy;
-            updatingStats.HitMiss = stats.HitMiss;
-            updatingStats.Hit50 = stats.Hit50;
-            updatingStats.Hit100 = stats.Hit100;
-            updatingStats.Hit300 = stats.Hit300;
-
-            await db.SaveChangesAsync();
         }
 
         public static async Task<ScoreRow?> SerializeScoreString(string[] values)
