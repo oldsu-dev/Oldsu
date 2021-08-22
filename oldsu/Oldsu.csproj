@@ -6,6 +6,7 @@
   </PropertyGroup>
 
 <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
     <PackageReference Include="MaxMind.Db" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
