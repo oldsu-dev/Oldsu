@@ -3,6 +3,7 @@ using Oldsu.Types;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MySqlConnector;
 using Oldsu.Enums;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 
@@ -75,6 +76,7 @@ namespace Oldsu
                 userid, gamemode
             );
 
+        [Obsolete("dont use, vulnerable to sql injections.")]
         public async Task TestAddMapAsync(string hash)
         {
             await this.Database.ExecuteSqlRawAsync(
@@ -94,6 +96,28 @@ namespace Oldsu
                VALUES
                ('{hash}', '{beatmapset.BeatmapsetID}', 0, 0, 0, 0, 0, 0, 0, 0);"
             );
+        }
+
+        public async Task ExecuteStatUpdate(Stats stats)
+        {
+            await this.Database.ExecuteSqlRawAsync(
+                @"UPDATE `Stats` SET 
+                  RankedScore = {0}, TotalScore = {1}, Accuracy = {2}, Playcount = {3}, CountSSH = {4}, CountSS = {5}, CountSH = {6}, CountS = {7}, CountA = {8}, CountB = {9}, CountC = {10}, CountD = {11}, Hit300 = {12}, Hit100 = {13}, Hit50 = {14}, HitMiss = {15}
+                  WHERE UserID = {16} AND Mode = {17};",
+                stats.RankedScore, stats.TotalScore, stats.Accuracy, stats.Playcount, stats.CountSSH, stats.CountSS,
+                stats.CountSH, stats.CountS, stats.CountA, stats.CountB, stats.CountC, stats.CountD, stats.Hit300, stats.Hit100,
+                stats.Hit50, stats.HitMiss, stats.UserID, stats.Mode);
+        }
+        
+        public async Task ExecuteStatUpdate(StatsWithRank stats)
+        {
+            await this.Database.ExecuteSqlRawAsync(
+                @"UPDATE `Stats` SET 
+                  RankedScore = {0}, TotalScore = {1}, Accuracy = {2}, Playcount = {3}, CountSSH = {4}, CountSS = {5}, CountSH = {6}, CountS = {7}, CountA = {8}, CountB = {9}, CountC = {10}, CountD = {11}, Hit300 = {12}, Hit100 = {13}, Hit50 = {14}, HitMiss = {15}
+                  WHERE UserID = {16} AND Mode = {17};",
+                stats.RankedScore, stats.TotalScore, stats.Accuracy, stats.Playcount, stats.CountSSH, stats.CountSS,
+                stats.CountSH, stats.CountS, stats.CountA, stats.CountB, stats.CountC, stats.CountD, stats.Hit300, stats.Hit100,
+                stats.Hit50, stats.HitMiss, stats.UserID, stats.Mode);
         }
 
         public DbSet<UserInfo> UserInfo { get; set; }
