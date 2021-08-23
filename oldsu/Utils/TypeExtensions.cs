@@ -12,16 +12,20 @@ namespace Oldsu.Utils
         public static void UpdateStats(this StatsWithRank stats, ScoreRow score)
         {
             stats.TotalScore += score.Score;
-
-            stats.Hit300 += score.Hit300;
-            stats.Hit100 += score.Hit100;
-            stats.Hit50 += score.Hit50;
-            stats.HitMiss += score.HitMiss;
             stats.Playcount++;
+
+            if (score.Passed)
+            {
+                stats.Hit300 += score.Hit300;
+                stats.Hit100 += score.Hit100;
+                stats.Hit50 += score.Hit50;
+                stats.HitMiss += score.HitMiss;
             
-            stats.Accuracy = (float)Math.Round(
-                (double)(stats.Hit50 * 50 + stats.Hit100 * 100 + stats.Hit300 * 300) / (double)((stats.Hit300 + stats.Hit100 + stats.Hit50) * 300) * 100,
-                2);
+            
+                stats.Accuracy = (float)Math.Round(
+                    (double)(stats.Hit50 * 50 + stats.Hit100 * 100 + stats.Hit300 * 300) / (double)((stats.Hit300 + stats.Hit100 + stats.Hit50) * 300) * 100,
+                    2);
+            }
         }
 
         public static async Task<ScoreRow?> SerializeScoreString(string[] values)
