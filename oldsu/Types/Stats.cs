@@ -10,7 +10,7 @@ namespace Oldsu.Types
     public class Stats
     {
         [Key]
-        public int UserID { get; set; }
+        public uint UserID { get; set; }
 
         [Required]
         public Mode Mode { get; set; }
