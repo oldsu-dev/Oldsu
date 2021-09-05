@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Oldsu.Enums;
 
@@ -10,7 +11,10 @@ namespace Oldsu.Types
         public uint Rank { get; set; }
         
         [Key]
-        public int UserID { get; set; }
+        public uint UserID { get; set; }
+        
+        [ForeignKey(nameof(UserID))]
+        public UserInfo User { get; set; }
 
         public Mode Mode { get; set; }
 
