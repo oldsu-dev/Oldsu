@@ -134,6 +134,8 @@ namespace Oldsu
 
         public DbSet<ScoreRow> Scores { get; set; }
         public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
+        
+        public DbSet<News> News { get; set; }
 
         public DbSet<Friendship> Friends { get; set; }
     }
