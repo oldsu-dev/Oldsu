@@ -366,7 +366,7 @@ CREATE TABLE `UserInfo` (
   `Privileges` tinyint unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `UserID_UNIQUE` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -438,7 +438,7 @@ CREATE TABLE `UserPages` (
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `StatsWithRank` AS select row_number() OVER (PARTITION BY `st`.`Mode` ORDER BY `st`.`RankedScore` )  AS `Rank`,`st`.`UserID` AS `UserID`,`st`.`Mode` AS `Mode`,`st`.`RankedScore` AS `RankedScore`,`st`.`TotalScore` AS `TotalScore`,`st`.`UserLevel` AS `UserLevel`,`st`.`Accuracy` AS `Accuracy`,`st`.`Playcount` AS `Playcount`,`st`.`CountSSH` AS `CountSSH`,`st`.`CountSS` AS `CountSS`,`st`.`CountSH` AS `CountSH`,`st`.`CountS` AS `CountS`,`st`.`CountA` AS `CountA`,`st`.`CountB` AS `CountB`,`st`.`CountC` AS `CountC`,`st`.`CountD` AS `CountD`,`st`.`Hit300` AS `Hit300`,`st`.`Hit100` AS `Hit100`,`st`.`Hit50` AS `Hit50`,`st`.`HitMiss` AS `HitMiss` from `Stats` `st` */;
+/*!50001 VIEW `StatsWithRank` AS select row_number() OVER (PARTITION BY `st`.`Mode` ORDER BY `st`.`RankedScore` desc )  AS `Rank`,`st`.`UserID` AS `UserID`,`st`.`Mode` AS `Mode`,`st`.`RankedScore` AS `RankedScore`,`st`.`TotalScore` AS `TotalScore`,`st`.`UserLevel` AS `UserLevel`,`st`.`Accuracy` AS `Accuracy`,`st`.`Playcount` AS `Playcount`,`st`.`CountSSH` AS `CountSSH`,`st`.`CountSS` AS `CountSS`,`st`.`CountSH` AS `CountSH`,`st`.`CountS` AS `CountS`,`st`.`CountA` AS `CountA`,`st`.`CountB` AS `CountB`,`st`.`CountC` AS `CountC`,`st`.`CountD` AS `CountD`,`st`.`Hit300` AS `Hit300`,`st`.`Hit100` AS `Hit100`,`st`.`Hit50` AS `Hit50`,`st`.`HitMiss` AS `HitMiss` from `Stats` `st` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -452,4 +452,4 @@ CREATE TABLE `UserPages` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-09-05 15:36:37
+-- Dump completed on 2021-09-06 15:24:30
