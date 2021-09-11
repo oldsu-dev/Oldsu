@@ -138,5 +138,7 @@ namespace Oldsu
         public DbSet<News> News { get; set; }
 
         public DbSet<Friendship> Friends { get; set; }
+        
+        public DbSet<UserPage> UserPages { get; set; }
     }
 }
