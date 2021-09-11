@@ -6,21 +6,21 @@ namespace Oldsu.Types {
         [Key] 
         public int UserID { get; set; }
         
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
 
         [StringLength(32)]
-        public string Occupation { get; set; }
+        public string? Occupation { get; set; }
         
         [StringLength(32)]
-        public string Interests { get; set; }
+        public string? Interests { get; set; }
         
         [StringLength(32)]
-        public string Website { get; set; }
+        public string? Website { get; set; }
         
         [StringLength(32)]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
         
         [StringLength(32)]
-        public string Discord { get; set; }
+        public string? Discord { get; set; }
     }
 }
