@@ -159,5 +159,6 @@ namespace Oldsu
         public DbSet<Friendship> Friends { get; set; }
         
         public DbSet<UserPage> UserPages { get; set; }
+        public DbSet<RankHistory> RankHistory { get; set; }
     }
 }

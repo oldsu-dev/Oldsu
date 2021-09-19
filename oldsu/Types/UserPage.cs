@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Oldsu.Types {
     public class UserPage {
         [Key] 
-        public int UserID { get; set; }
+        public uint UserID { get; set; }
         
         public DateTime? Birthday { get; set; }
 
