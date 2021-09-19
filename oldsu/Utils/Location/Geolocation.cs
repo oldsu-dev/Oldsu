@@ -15,7 +15,7 @@ namespace Oldsu.Utils.Location
         private static readonly ConcurrentDictionary<string, GeoLocSerialize> GeoLocCache = new();
         private static readonly Reader IpLookupDatabase = new("GeoLite2-City.mmdb", FileAccessMode.MemoryMapped);
 
-        public static async Task<(float, float, byte)> GetGeolocationAsync(string ip)
+        public static async Task<(float X, float Y, byte Country)> GetGeolocationAsync(string ip)
         {
             if (ip.StartsWith("192.168") || ip.StartsWith("172.16") || ip.StartsWith("127") || ip.StartsWith("10"))
                 return (0, 0, 0);

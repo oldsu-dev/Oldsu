@@ -62,8 +62,27 @@ namespace Oldsu
                 await this.Database.RollbackTransactionAsync();
                 throw;
             }
+        }
+
+        /// <summary>
+        ///     Checks if user is valid for registration.
+        /// </summary>
+        public async Task<RegisterResult> ValidateUser(string username, string ip)
+        {
+            // todo check hwid
+            var user = await this.UserInfo
+                .Where(u => u.Username == username)
+                .FirstOrDefaultAsync();
+
+            if (user != null)
+                return RegisterResult.UsernameAlreadyExists;
             
-            
+            /*
+             var security = await this.UserSecurityInfo.Where(s=>s.Ip == ip || s.Hwid == hwid)
+             
+            check...
+            */
+            return RegisterResult.RegisterSuccessful;
         }
 
         public async Task AddStatsAsync(uint userid, byte gamemode) =>
