@@ -31,6 +31,6 @@ namespace Oldsu.Types
 
         public Privileges Privileges { get; set; }
         
-        public DateTime JoinedAt { get; set; }
+        public DateTime JoinedAt { get; set; } = DateTime.Now;
     }
 }

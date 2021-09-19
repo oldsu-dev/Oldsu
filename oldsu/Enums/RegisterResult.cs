@@ -1,6 +1,6 @@
 ﻿namespace Oldsu.Enums
 {
-    public enum RegisterResult
+    public enum RegisterAttemptResult
     {
         UsernameAlreadyExists,
         UserHwidBanned,
