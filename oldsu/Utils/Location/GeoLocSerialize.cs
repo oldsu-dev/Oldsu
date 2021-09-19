@@ -2,7 +2,7 @@
 
 namespace Oldsu.Utils.Location
 {
-    public class GeoLocSerialize
+    internal class GeoLocSerialize
     {
         [JsonProperty("lat")]
         public float Lat { get; set; }
