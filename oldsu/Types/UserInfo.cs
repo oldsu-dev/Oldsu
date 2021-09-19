@@ -1,3 +1,4 @@
+using System;
 using Oldsu.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -29,5 +30,7 @@ namespace Oldsu.Types
         public string AvatarBaseUrl => $"/avatars/{Username}.png";
 
         public Privileges Privileges { get; set; }
+        
+        public DateTime JoinedAt { get; set; }
     }
 }
