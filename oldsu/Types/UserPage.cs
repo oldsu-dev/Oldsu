@@ -6,7 +6,7 @@ namespace Oldsu.Types {
         [Key] 
         public int UserID { get; set; }
         
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
 
         [StringLength(32)]
         public string Occupation { get; set; }
