@@ -17,6 +17,10 @@ namespace Oldsu.Types
         public virtual UserInfo User { get; set; }
 
         public string BeatmapHash { get; set; }
+
+        [ForeignKey("BeatmapHash")]
+        public virtual Beatmap Beatmap { get; set; }
+        
         public string SubmitHash { get; set; }
         
         public ulong Score { get; set; }
