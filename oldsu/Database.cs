@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using MySqlConnector;
 using Oldsu.Enums;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable 8618
 
 namespace Oldsu
 {
@@ -160,5 +162,7 @@ namespace Oldsu
         
         public DbSet<UserPage> UserPages { get; set; }
         public DbSet<RankHistory> RankHistory { get; set; }
+        
+        public DbSet<Badge> Badges { get; set; }
     }
 }
