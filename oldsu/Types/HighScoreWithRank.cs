@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,11 @@ namespace Oldsu.Types
         public ulong Rank { get; set; }
 
         public string BeatmapHash { get; set; }
+        
+        [ForeignKey("BeatmapHash")]
+
+        public virtual Beatmap Beatmap { get; set; }
+        
         public string SubmitHash { get; set; }
 
         public ulong Score { get; set; }

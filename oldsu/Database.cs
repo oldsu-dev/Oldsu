@@ -59,11 +59,30 @@ namespace Oldsu
             }
             catch
             {
-                await this.Database.RollbackTransactionAsync();
+                await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        /// <summary>
+        ///     Checks if user is valid for registration.
+        /// </summary>
+        public async Task<RegisterAttemptResult> ValidateRegistrationAttempt(string username, string ip)
+        {
+            // todo check hwid
+            var user = await this.UserInfo
+                .Where(u => u.Username == username)
+                .FirstOrDefaultAsync();
+
+            if (user != null)
+                return RegisterAttemptResult.UsernameAlreadyExists;
             
-            
+            /*
+             var security = await this.UserSecurityInfo.Where(s=>s.Ip == ip || s.Hwid == hwid)
+             
+            check...
+            */
+            return RegisterAttemptResult.RegisterSuccessful;
         }
 
         public async Task AddStatsAsync(uint userid, byte gamemode) =>
@@ -140,5 +159,6 @@ namespace Oldsu
         public DbSet<Friendship> Friends { get; set; }
         
         public DbSet<UserPage> UserPages { get; set; }
+        public DbSet<RankHistory> RankHistory { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Oldsu.Types {
     public class UserPage {
         [Key] 
-        public int UserID { get; set; }
+        public uint UserID { get; set; }
         
         public DateTime? Birthday { get; set; }
 
@@ -22,5 +22,10 @@ namespace Oldsu.Types {
         
         [StringLength(32)]
         public string? Discord { get; set; }
+        
+        [StringLength(32)]
+        public string? Title { get; set; }
+        
+        public string? BBText { get; set; }
     }
 }
