@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Oldsu.Enums;
 
@@ -6,6 +7,7 @@ namespace Oldsu.Types
 {
     public class Beatmap
     {
+        [Key]
         public string BeatmapHash { get; set; }
         public int BeatmapID { get; set; }
 

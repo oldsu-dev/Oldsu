@@ -230,6 +230,42 @@ CREATE TABLE `OffenceHistory` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `PendingRegistrations`
+--
+
+DROP TABLE IF EXISTS `PendingRegistrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PendingRegistrations` (
+  `Token` char(128) NOT NULL,
+  `Username` varchar(32) NOT NULL,
+  `Password` char(60) NOT NULL,
+  `Email` tinytext NOT NULL,
+  `Country` tinyint NOT NULL,
+  PRIMARY KEY (`Token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `RankHistory`
+--
+
+DROP TABLE IF EXISTS `RankHistory`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `RankHistory` (
+  `RankHistoryID` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `UserID` int unsigned NOT NULL,
+  `Rank` int unsigned NOT NULL,
+  `Date` date NOT NULL DEFAULT (curdate()),
+  PRIMARY KEY (`RankHistoryID`),
+  UNIQUE KEY `RankHistoryID_UNIQUE` (`RankHistoryID`),
+  KEY `fk_RankHistory_1_idx` (`UserID`),
+  CONSTRAINT `fk_RankHistory_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`)
+) ENGINE=InnoDB AUTO_INCREMENT=256 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `Ratings`
 --
 
@@ -283,6 +319,24 @@ CREATE TABLE `Scores` (
   CONSTRAINT `fk_scores_beatmap_hash` FOREIGN KEY (`BeatmapHash`) REFERENCES `Beatmaps` (`BeatmapHash`),
   CONSTRAINT `fk_scores_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `SessionTokens`
+--
+
+DROP TABLE IF EXISTS `SessionTokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `SessionTokens` (
+  `Token` char(128) NOT NULL,
+  `ExpiresAt` datetime NOT NULL,
+  `UserID` int unsigned NOT NULL,
+  PRIMARY KEY (`Token`),
+  UNIQUE KEY `Token_UNIQUE` (`Token`),
+  KEY `fk_SessionTokens_1_idx` (`UserID`),
+  CONSTRAINT `fk_SessionTokens_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -364,9 +418,10 @@ CREATE TABLE `UserInfo` (
   `BannedReason` text,
   `Email` tinytext NOT NULL,
   `Privileges` tinyint unsigned NOT NULL DEFAULT '1',
+  `JoinedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `UserID_UNIQUE` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=180 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -384,10 +439,66 @@ CREATE TABLE `UserPages` (
   `Website` tinytext,
   `Twitter` tinytext,
   `Discord` tinytext,
+  `Title` tinytext,
+  `BBText` mediumtext,
   UNIQUE KEY `UserID_UNIQUE` (`UserID`),
   CONSTRAINT `fk_userid` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping routines for database 'oldsu'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `save_current_ranks` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `save_current_ranks`()
+BEGIN
+    INSERT INTO RankHistory (UserID, `Rank`) SELECT UserID, `Rank` from StatsWithRank;
+	
+	DELETE FROM
+		RankHistory r1
+	WHERE
+		RankHistoryID IN (
+			SELECT
+				RankHistoryID
+			FROM
+				(
+					SELECT
+						RankHistoryID,
+						`index`
+					FROM
+						(
+							SELECT
+								RankHistoryID,
+								ROW_NUMBER() over (
+									PARTITION BY UserID
+									ORDER BY
+										`Date`
+									DESC
+								) as `index`
+							FROM
+								RankHistory
+							
+						) r2
+					WHERE
+						`index` > 50
+				) r3
+		);
+    
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Final view structure for view `FriendsWithMutual`
@@ -452,4 +563,4 @@ CREATE TABLE `UserPages` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-09-06 15:24:30
+-- Dump completed on 2021-09-19 18:20:29
