@@ -152,7 +152,7 @@ namespace Oldsu
         public DbSet<AuthenticationPair> AuthenticationPairs { get; set; }
 
         public DbSet<ScoreRow> Scores { get; set; }
-        public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
+        public DbSet<HighScoreWithRank> HighscoresWithRank { get; set; }
         
         public DbSet<News> News { get; set; }
 
