@@ -26,7 +26,10 @@ namespace Oldsu.Types
         [JsonIgnore]
         public string Email { get; set; }
 
+        [JsonIgnore]
         public string FlagBaseUrl => $"/resources/image/flags/{CountryCodes.FromCode[Country].ToLower()}.png";
+   
+        [JsonIgnore]
         public string AvatarBaseUrl => $"/avatars/{Username}.png";
 
         public Privileges Privileges { get; set; }
