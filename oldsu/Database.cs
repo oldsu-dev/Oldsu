@@ -25,7 +25,35 @@ namespace Oldsu
 
         public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode) =>
             StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync();
-        
+
+        public async Task<Session?> GetWebSession(string sessionId) => 
+            await Sessions.Where(s => s.SessionId == sessionId)
+                .Include(s => s.UserInfo)
+                .FirstOrDefaultAsync();
+
+        public async Task AddWebSession(string sessionId, uint userId)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                await Sessions.AddAsync(new Session
+                {
+                    SessionId = sessionId,
+                    UserID = userId,
+                });
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task<UserInfo?> AuthenticateAsync(string username, string passwordHash)
         {
             var authenticationPair = await this.AuthenticationPairs
@@ -164,5 +192,7 @@ namespace Oldsu
         public DbSet<RankHistory> RankHistory { get; set; }
         
         public DbSet<Badge> Badges { get; set; }
+
+        public DbSet<Session> Sessions { get; set; }
     }
 }
