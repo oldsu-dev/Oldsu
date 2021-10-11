@@ -54,6 +54,28 @@ namespace Oldsu
             }
         }
 
+        public async Task RemoveWebSession(string sessionId)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                Sessions.Remove(new Session
+                {
+                    SessionId = sessionId,
+                });
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task<UserInfo?> AuthenticateAsync(string username, string passwordHash)
         {
             var authenticationPair = await this.AuthenticationPairs
