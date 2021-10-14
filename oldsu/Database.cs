@@ -33,6 +33,15 @@ namespace Oldsu
 
         public async Task AddWebSession(string sessionId, uint userId)
         {
+            // remove old sessions
+            var oldSessions = await Sessions
+                .Where(s => s.UserID == userId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            foreach (var oldSession in oldSessions)
+                await RemoveWebSession(oldSession.SessionId);
+            
             var transaction = await Database.BeginTransactionAsync();
 
             try
