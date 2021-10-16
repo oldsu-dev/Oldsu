@@ -26,6 +26,58 @@ namespace Oldsu
         public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode) =>
             StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync();
 
+        public async Task UpdateInformation(uint userId, string? occupation, string? interests, DateTime? birthday,
+            string? discord, string? twitter, string? website)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                var info = await UserPages
+                    .Where(up => up.UserID == userId)
+                    .FirstOrDefaultAsync();
+
+                info.Occupation = occupation;
+                info.Interests = interests;
+                info.Birthday = birthday;
+                info.Discord = discord;
+                info.Twitter = twitter;
+                info.Website = website;
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        
+        public async Task UpdateBBCode(uint userId, string? BBCode)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                var info = await UserPages
+                    .Where(up => up.UserID == userId)
+                    .FirstOrDefaultAsync();
+
+                info.BBText = BBCode;
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task<Session?> GetWebSession(string sessionId) => 
             await Sessions.Where(s => s.SessionId == sessionId)
                 .Include(s => s.UserInfo)
