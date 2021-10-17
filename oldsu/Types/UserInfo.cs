@@ -1,6 +1,7 @@
 using System;
 using Oldsu.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Text.Json.Serialization;
 
 namespace Oldsu.Types
@@ -28,9 +29,12 @@ namespace Oldsu.Types
 
         [JsonIgnore]
         public string FlagBaseUrl => $"/resources/image/flags/{CountryCodes.FromCode[Country].ToLower()}.png";
-   
+
+        [JsonIgnore] 
+        public bool HasAvatar { get; set; }
+        
         [JsonIgnore]
-        public string AvatarBaseUrl => $"/avatars/{Username}.png";
+        public string AvatarBaseUrl => HasAvatar ? $"/avatars/{UserID}.png" : "/resources/image/avatar_placeholder.png";
 
         public Privileges Privileges { get; set; }
         
