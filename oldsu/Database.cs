@@ -37,6 +37,12 @@ namespace Oldsu
                     .Where(up => up.UserID == userId)
                     .FirstOrDefaultAsync();
 
+                if (info == null)
+                {
+                    info = new UserPage{UserID = userId};
+                    await UserPages.AddAsync(info);
+                }
+
                 info.Occupation = occupation;
                 info.Interests = interests;
                 info.Birthday = birthday;
@@ -266,7 +272,7 @@ namespace Oldsu
         public DbSet<AuthenticationPair> AuthenticationPairs { get; set; }
 
         public DbSet<ScoreRow> Scores { get; set; }
-        public DbSet<HighScoreWithRank> HighscoresWithRank { get; set; }
+        public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
         
         public DbSet<News> News { get; set; }
 
