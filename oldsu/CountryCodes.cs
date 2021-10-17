@@ -5,6 +5,7 @@ namespace Oldsu
     public static class CountryCodes
     {
         public static readonly Dictionary<byte, string> FromCode = new() {
+            {  0  , "FI" },
             {  104, "IO" },
             {  178, "PS" },
             {  37 , "BZ" },
