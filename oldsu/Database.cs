@@ -78,12 +78,12 @@ namespace Oldsu
             }
         }
 
-        public async Task<Session?> GetWebSession(string sessionId) => 
-            await SessionTokens.Where(s => s.SessionId == sessionId)
+        public async Task<Session?> GetWebSession(string token) => 
+            await SessionTokens.Where(s => s.Token == token)
                 .Include(s => s.UserInfo)
                 .FirstOrDefaultAsync();
 
-        public async Task AddWebSession(string sessionId, uint userId, DateTime expiration)
+        public async Task AddWebSession(string token, uint userId, DateTime expiration)
         {
             // remove old sessions
             var oldSessions = await SessionTokens
@@ -92,7 +92,7 @@ namespace Oldsu
                 .ToListAsync();
 
             foreach (var oldSession in oldSessions)
-                await RemoveWebSession(oldSession.SessionId);
+                await RemoveWebSession(oldSession.Token);
             
             var transaction = await Database.BeginTransactionAsync();
 
@@ -100,7 +100,7 @@ namespace Oldsu
             {
                 await SessionTokens.AddAsync(new Session
                 {
-                    SessionId = sessionId,
+                    Token = token,
                     UserID = userId,
                     ExpiresAt = expiration
                 });
@@ -116,7 +116,7 @@ namespace Oldsu
             }
         }
 
-        public async Task RemoveWebSession(string sessionId)
+        public async Task RemoveWebSession(string token)
         {
             var transaction = await Database.BeginTransactionAsync();
 
@@ -124,7 +124,7 @@ namespace Oldsu
             {
                 SessionTokens.Remove(new Session
                 {
-                    SessionId = sessionId,
+                    Token = token,
                 });
                 
                 await SaveChangesAsync();
