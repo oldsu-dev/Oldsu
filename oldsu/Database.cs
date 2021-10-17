@@ -79,14 +79,14 @@ namespace Oldsu
         }
 
         public async Task<Session?> GetWebSession(string sessionId) => 
-            await Sessions.Where(s => s.SessionId == sessionId)
+            await SessionTokens.Where(s => s.SessionId == sessionId)
                 .Include(s => s.UserInfo)
                 .FirstOrDefaultAsync();
 
-        public async Task AddWebSession(string sessionId, uint userId)
+        public async Task AddWebSession(string sessionId, uint userId, DateTime expiration)
         {
             // remove old sessions
-            var oldSessions = await Sessions
+            var oldSessions = await SessionTokens
                 .Where(s => s.UserID == userId)
                 .AsNoTracking()
                 .ToListAsync();
@@ -98,10 +98,11 @@ namespace Oldsu
 
             try
             {
-                await Sessions.AddAsync(new Session
+                await SessionTokens.AddAsync(new Session
                 {
                     SessionId = sessionId,
                     UserID = userId,
+                    ExpiresAt = expiration
                 });
                 
                 await SaveChangesAsync();
@@ -121,7 +122,7 @@ namespace Oldsu
 
             try
             {
-                Sessions.Remove(new Session
+                SessionTokens.Remove(new Session
                 {
                     SessionId = sessionId,
                 });
@@ -276,6 +277,6 @@ namespace Oldsu
         
         public DbSet<Badge> Badges { get; set; }
 
-        public DbSet<Session> Sessions { get; set; }
+        public DbSet<Session> SessionTokens { get; set; }
     }
 }
