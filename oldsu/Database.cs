@@ -2,6 +2,7 @@
 using Oldsu.Types;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MySqlConnector;
 using Oldsu.Enums;
@@ -21,8 +22,8 @@ namespace Oldsu
 
         public DbSet<StatsWithRank> StatsWithRank { get; set; }
 
-        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode) =>
-            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync();
+        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode, CancellationToken cancellationToken = default) =>
+            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync(cancellationToken);
         
         public async Task<UserInfo?> AuthenticateAsync(string username, string passwordHash)
         {

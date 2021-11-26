@@ -30,6 +30,18 @@ namespace Oldsu.Logging
             await _logWriterTarget.LogInfo<T>(message, exception, dump, lineNumber, caller);
         }
 
+        public async void LogInfoSync<T>(
+            string message, 
+            Exception? exception = null,
+            object? dump = null,
+            [CallerLineNumber] int lineNumber = 0,
+            [CallerMemberName] string caller = null)
+        {
+            if (caller == null) throw new ArgumentNullException(nameof(caller));
+            
+            await _logWriterTarget.LogInfo<T>(message, exception, dump, lineNumber, caller);
+        }
+        
         public async Task LogCritical<T>(
             string message, 
             Exception? exception = null,
@@ -42,7 +54,31 @@ namespace Oldsu.Logging
             await _logWriterTarget.LogCritical<T>(message, exception, dump, lineNumber, caller);
         }
         
+        public async void LogCriticalSync<T>(
+            string message, 
+            Exception? exception = null,
+            object? dump = null,
+            [CallerLineNumber] int lineNumber = 0,
+            [CallerMemberName] string caller = null)
+        {
+            if (caller == null) throw new ArgumentNullException(nameof(caller));
+
+            await _logWriterTarget.LogCritical<T>(message, exception, dump, lineNumber, caller);
+        }
+
         public async Task LogFatal<T>(
+            string message, 
+            Exception? exception = null,
+            object? dump = null,
+            [CallerLineNumber] int lineNumber = 0,
+            [CallerMemberName] string caller = null)
+        {
+            if (caller == null) throw new ArgumentNullException(nameof(caller));
+
+            await _logWriterTarget.LogFatal<T>(message, exception, dump, lineNumber, caller);
+        }
+        
+        public async void LogFatalSync<T>(
             string message, 
             Exception? exception = null,
             object? dump = null,
