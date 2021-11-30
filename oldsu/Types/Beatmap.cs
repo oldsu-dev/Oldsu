@@ -43,5 +43,7 @@ namespace Oldsu.Types
 
         public bool HasStoryboard { get; set; }
         public bool HasVideo { get; set; }
+        
+        public string Filename { get; set; }
     }
 }
