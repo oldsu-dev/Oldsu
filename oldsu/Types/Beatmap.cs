@@ -11,7 +11,7 @@ namespace Oldsu.Types
         public string BeatmapHash { get; set; }
         public int BeatmapID { get; set; }
 
-        public uint OriginalBeatmapID { get; set; }
+        public uint? OriginalBeatmapID { get; set; }
 
         public virtual Beatmapset Beatmapset { get; set; }
 
