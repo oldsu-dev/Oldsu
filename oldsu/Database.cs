@@ -157,7 +157,71 @@ namespace Oldsu
             
             return null;
         }
+        
+        public async Task RequireEmailConfirmation(string token, string username, string email, string passwordHash, byte country)
+        {
+            string bcrypt = BCrypt.Net.BCrypt.HashPassword(passwordHash);
+            var transaction = await this.Database.BeginTransactionAsync();
 
+            try
+            {
+                EmailConfirmationToken userInfo = new EmailConfirmationToken()
+                {
+                    PendingEmail= email, 
+                    PendingUsername = username, 
+                    Country = country, 
+                    PendingPassword = bcrypt,
+                    Token = token
+                };
+                
+                await this.EmailConfirmationTokens.AddAsync(userInfo);
+                await this.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        
+        public async Task<bool> CompleteEmailConfirmation(string token)
+        {
+            var transaction = await this.Database.BeginTransactionAsync();
+
+            try
+            {
+                EmailConfirmationToken? emailConfirmationToken = await EmailConfirmationTokens.FindAsync(token);
+
+                if (emailConfirmationToken is null)
+                    return false;
+
+                UserInfo userInfo = new UserInfo {Username = emailConfirmationToken.PendingUsername, 
+                    Email = emailConfirmationToken.PendingEmail, Country = emailConfirmationToken.Country,
+                    Privileges = Privileges.Normal
+                };
+                
+                await this.UserInfo.AddAsync(userInfo);
+                await this.SaveChangesAsync();
+
+                await this.AuthenticationPairs.AddAsync(new AuthenticationPair
+                    {UserID = userInfo.UserID, Password = emailConfirmationToken.PendingPassword});
+
+                EmailConfirmationTokens.Remove(emailConfirmationToken);
+                
+                await this.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return true;
+        }
+        
         public async Task RegisterAsync(string username, string email, string passwordHash, byte country)
         {
             string bcrypt = BCrypt.Net.BCrypt.HashPassword(passwordHash);
@@ -283,6 +347,7 @@ namespace Oldsu
         
         public DbSet<Badge> Badges { get; set; }
 
+        public DbSet<EmailConfirmationToken> EmailConfirmationTokens { get; set; }
         public DbSet<Session> SessionTokens { get; set; }
     }
 }
