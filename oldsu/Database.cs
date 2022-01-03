@@ -70,6 +70,12 @@ namespace Oldsu
                 var info = await UserPages
                     .Where(up => up.UserID == userId)
                     .FirstOrDefaultAsync();
+                
+                if (info == null)
+                {
+                    info = new UserPage{UserID = userId};
+                    await UserPages.AddAsync(info);
+                }
 
                 info.BBText = BBCode;
                 
