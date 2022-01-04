@@ -257,11 +257,11 @@ namespace Oldsu
         /// <summary>
         ///     Checks if user is valid for registration.
         /// </summary>
-        public async Task<RegisterAttemptResult> ValidateRegistrationAttempt(string username, string ip)
+        public async Task<RegisterAttemptResult> ValidateRegistrationAttempt(string username, string email, string ip)
         {
             // todo check hwid
             var user = await this.UserInfo
-                .Where(u => u.Username == username)
+                .Where(u => u.Username == username || u.Email == email)
                 .FirstOrDefaultAsync();
 
             if (user != null)
