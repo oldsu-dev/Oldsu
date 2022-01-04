@@ -205,7 +205,7 @@ namespace Oldsu
 
                 UserInfo userInfo = new UserInfo {Username = emailConfirmationToken.PendingUsername, 
                     Email = emailConfirmationToken.PendingEmail, Country = emailConfirmationToken.Country,
-                    Privileges = Privileges.Normal
+                    Privileges = Privileges.Normal | Privileges.Supporter
                 };
                 
                 await this.UserInfo.AddAsync(userInfo);
