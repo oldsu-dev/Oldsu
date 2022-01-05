@@ -24,8 +24,8 @@ namespace Oldsu
 
         public DbSet<StatsWithRank> StatsWithRank { get; set; }
 
-        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode) =>
-            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync();
+        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode, CancellationToken cancellationToken = default) =>
+            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync(cancellationToken);
 
         public async Task UpdateInformation(uint userId, string? occupation, string? interests, DateTime? birthday,
             string? discord, string? twitter, string? website)
