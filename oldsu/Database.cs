@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using MySqlConnector;
 using Oldsu.Enums;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable 8618
 
 namespace Oldsu
 {
@@ -22,9 +24,133 @@ namespace Oldsu
 
         public DbSet<StatsWithRank> StatsWithRank { get; set; }
 
-        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode, CancellationToken cancellationToken = default) =>
-            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync(cancellationToken);
+        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode) =>
+            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync();
+
+        public async Task UpdateInformation(uint userId, string? occupation, string? interests, DateTime? birthday,
+            string? discord, string? twitter, string? website)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                var info = await UserPages
+                    .Where(up => up.UserID == userId)
+                    .FirstOrDefaultAsync();
+
+                if (info == null)
+                {
+                    info = new UserPage{UserID = userId};
+                    await UserPages.AddAsync(info);
+                }
+
+                info.Occupation = occupation;
+                info.Interests = interests;
+                info.Birthday = birthday;
+                info.Discord = discord;
+                info.Twitter = twitter;
+                info.Website = website;
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
         
+        public async Task UpdateBBCode(uint userId, string? BBCode)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                var info = await UserPages
+                    .Where(up => up.UserID == userId)
+                    .FirstOrDefaultAsync();
+                
+                if (info == null)
+                {
+                    info = new UserPage{UserID = userId};
+                    await UserPages.AddAsync(info);
+                }
+
+                info.BBText = BBCode;
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<Session?> GetWebSession(string token) => 
+            await SessionTokens.Where(s => s.Token == token)
+                .Include(s => s.UserInfo)
+                .FirstOrDefaultAsync();
+
+        public async Task AddWebSession(string token, uint userId, DateTime expiration)
+        {
+            // remove old sessions
+            var oldSessions = await SessionTokens
+                .Where(s => s.UserID == userId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            foreach (var oldSession in oldSessions)
+                await RemoveWebSession(oldSession.Token);
+            
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                await SessionTokens.AddAsync(new Session
+                {
+                    Token = token,
+                    UserID = userId,
+                    ExpiresAt = expiration
+                });
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task RemoveWebSession(string token)
+        {
+            var transaction = await Database.BeginTransactionAsync();
+
+            try
+            {
+                SessionTokens.Remove(new Session
+                {
+                    Token = token,
+                });
+                
+                await SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task<UserInfo?> AuthenticateAsync(string username, string passwordHash)
         {
             var authenticationPair = await this.AuthenticationPairs
@@ -38,7 +164,71 @@ namespace Oldsu
             
             return null;
         }
+        
+        public async Task RequireEmailConfirmation(string token, string username, string email, string passwordHash, byte country)
+        {
+            string bcrypt = BCrypt.Net.BCrypt.HashPassword(passwordHash);
+            var transaction = await this.Database.BeginTransactionAsync();
 
+            try
+            {
+                EmailConfirmationToken userInfo = new EmailConfirmationToken()
+                {
+                    PendingEmail= email, 
+                    PendingUsername = username, 
+                    Country = country, 
+                    PendingPassword = bcrypt,
+                    Token = token
+                };
+                
+                await this.EmailConfirmationTokens.AddAsync(userInfo);
+                await this.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        
+        public async Task<bool> CompleteEmailConfirmation(string token)
+        {
+            var transaction = await this.Database.BeginTransactionAsync();
+
+            try
+            {
+                EmailConfirmationToken? emailConfirmationToken = await EmailConfirmationTokens.FindAsync(token);
+
+                if (emailConfirmationToken is null)
+                    return false;
+
+                UserInfo userInfo = new UserInfo {Username = emailConfirmationToken.PendingUsername, 
+                    Email = emailConfirmationToken.PendingEmail, Country = emailConfirmationToken.Country,
+                    Privileges = Privileges.Normal | Privileges.Supporter
+                };
+                
+                await this.UserInfo.AddAsync(userInfo);
+                await this.SaveChangesAsync();
+
+                await this.AuthenticationPairs.AddAsync(new AuthenticationPair
+                    {UserID = userInfo.UserID, Password = emailConfirmationToken.PendingPassword});
+
+                EmailConfirmationTokens.Remove(emailConfirmationToken);
+                
+                await this.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return true;
+        }
+        
         public async Task RegisterAsync(string username, string email, string passwordHash, byte country)
         {
             string bcrypt = BCrypt.Net.BCrypt.HashPassword(passwordHash);
@@ -60,11 +250,30 @@ namespace Oldsu
             }
             catch
             {
-                await this.Database.RollbackTransactionAsync();
+                await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        /// <summary>
+        ///     Checks if user is valid for registration.
+        /// </summary>
+        public async Task<RegisterAttemptResult> ValidateRegistrationAttempt(string username, string email, string ip)
+        {
+            // todo check hwid
+            var user = await this.UserInfo
+                .Where(u => u.Username == username || u.Email == email)
+                .FirstOrDefaultAsync();
+
+            if (user != null)
+                return RegisterAttemptResult.UsernameAlreadyExists;
             
-            
+            /*
+             var security = await this.UserSecurityInfo.Where(s=>s.Ip == ip || s.Hwid == hwid)
+             
+            check...
+            */
+            return RegisterAttemptResult.RegisterSuccessful;
         }
 
         public async Task AddStatsAsync(uint userid, byte gamemode) =>
@@ -135,7 +344,17 @@ namespace Oldsu
 
         public DbSet<ScoreRow> Scores { get; set; }
         public DbSet<HighScoreWithRank> HighScoresWithRank { get; set; }
+        
+        public DbSet<News> News { get; set; }
 
         public DbSet<Friendship> Friends { get; set; }
+        
+        public DbSet<UserPage> UserPages { get; set; }
+        public DbSet<RankHistory> RankHistory { get; set; }
+        
+        public DbSet<Badge> Badges { get; set; }
+
+        public DbSet<EmailConfirmationToken> EmailConfirmationTokens { get; set; }
+        public DbSet<Session> SessionTokens { get; set; }
     }
 }
