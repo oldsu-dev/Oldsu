@@ -53,7 +53,7 @@ namespace Oldsu.Utils
                     Mods = ushort.Parse(values[13]),
                     Passed = values[14] == "True",
                     Gamemode = byte.Parse(values[15]),
-                    Version = values[17],
+                    SubmittedAt = DateTime.Now,
                 };
 
                 score.UserId = score.User.UserID;
