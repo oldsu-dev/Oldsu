@@ -8,8 +8,33 @@ using Oldsu.Types;
 
 namespace Oldsu.Services.MySql
 {
-    public class MySqlStatService : DbContext, IUserService
+    public class MySqlStatService : DbContext, IStatService
     {
+        private DbSet<StatsWithRank> StatsWithRank { get; set; }
+        private DbSet<Stats> Stats { get; set; }
+
+        public async Task<StatsWithRank> AddStatsAsync(uint userid, Mode mode)
+        {
+            await Database.ExecuteSqlRawAsync(@"INSERT INTO `Stats` (`userid`, `Mode`) VALUES ({0}, {1});", userid, mode);
+            
+            return (await GetStatsWithRankAsync(userid, mode))!;
+        }
+
+        public async Task<StatsWithRank?> GetStatsWithRankAsync(uint userId, Mode mode)
+        {
+            var stats = await StatsWithRank.Where(st => st.UserID == userId && st.Mode == mode).AsNoTracking().FirstOrDefaultAsync();
+
+            Attach((Stats) stats);
+
+            return stats;
+        }
+
+        // stats parameter not used since ef has tracking
+        public async Task UpdateStatsAsync(Stats stats)
+        {
+            await SaveChangesAsync();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseMySql(
@@ -18,9 +43,9 @@ namespace Oldsu.Services.MySql
             );
         }
         
-        private DbSet<StatsWithRank> StatsWithRank { get; set; }
-
-        public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode, CancellationToken cancellationToken = default) =>
-            StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync(cancellationToken);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<StatsWithRank>().ToTable("StatsWithRank");
+        }
     }
 }
