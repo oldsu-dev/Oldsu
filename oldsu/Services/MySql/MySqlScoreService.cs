@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Oldsu.Enums;
@@ -8,12 +9,17 @@ namespace Oldsu.Services.MySql
 {
     public class MySqlScoreService : DbContext, IScoreService
     {
-        public async Task<ScoreRow?> GetScoreAsync(uint userId, Mode mode)
+        public IAsyncEnumerable<ScoreRow> GetScoresByMapHashAsync(string mapHash)
         {
             throw new NotImplementedException();
         }
 
-        public async Task AddScoreAsync(uint userid, Mode mode)
+        public IAsyncEnumerable<ScoreRow> GetScoresByMapIdAsync(uint mapId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task AddScoreAsync(ScoreRow score)
         {
             throw new NotImplementedException();
         }
