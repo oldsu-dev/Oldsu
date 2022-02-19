@@ -26,7 +26,7 @@ namespace Oldsu.DatabaseServices.MySql
             return null;
         }
 
-        public async Task<UserInfo?> GetUserInfo(uint userId)
+        public async Task<UserInfo?> GetUserInfoAsync(uint userId)
         {
             return await UserInfo.FindAsync(userId);
         }
