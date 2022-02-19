@@ -1,7 +1,10 @@
-﻿namespace Oldsu.DatabaseServices
+﻿using System.Threading.Tasks;
+using Oldsu.Types;
+
+namespace Oldsu.DatabaseServices
 {
     public interface IUserService
     {
-        
+        public Task<UserInfo?> AuthenticateAsync(string username, string passwordHash);
     }
 }
