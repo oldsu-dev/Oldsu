@@ -9,11 +9,12 @@ namespace Oldsu.DatabaseServices.MySql
     public class MySqlBeatmapService : DbContext, IBeatmapService
     {
         private DbSet<Beatmap> Beatmaps { get; set; }
+        private DbSet<Beatmapset> Beatmapsets { get; set; }
 
         public async Task<Beatmap?> GetBeatmapAsync(string mapHash)
         {
             return await Beatmaps
-                .Where(b => b.BeatmapHash.Equals(mapHash))
+                .Where(b => b.BeatmapHash == mapHash)
                 .Include(b => b.Beatmapset)
                 .FirstOrDefaultAsync();
         }

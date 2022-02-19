@@ -11,13 +11,13 @@ namespace Oldsu.DatabaseServices.MySql
     public class MySqlScoreService : DbContext, IScoreService
     {
         private DbSet<ScoreRow> Scores { get; set; }
-        private DbSet<HighScoreWithRank?> HighScoreWithRanks { get; set; }
+        private DbSet<HighScoreWithRank?> HighScoresWithRank { get; set; }
 
         public async Task<List<HighScoreWithRank?>> GetHighScoresOnMapAsync(string mapHash, Mode gamemode, int limit)
         {
-            return await HighScoreWithRanks
-                .Where(s => s.BeatmapHash.Equals(mapHash) &&
-                            s.Gamemode.Equals(gamemode) &&
+            return await HighScoresWithRank
+                .Where(s => s.BeatmapHash == mapHash &&
+                            s.Gamemode == (byte)gamemode &&
                             s.Passed)
                 .Include(s => s.User)
                 .OrderByDescending(s => s.Score)
@@ -28,10 +28,10 @@ namespace Oldsu.DatabaseServices.MySql
 
         public async Task<HighScoreWithRank?> GetHighScoreOnMapAsync(string mapHash, Mode gamemode, uint userId)
         {
-            return await HighScoreWithRanks
-                .Where(s => s.BeatmapHash.Equals(mapHash) &&
-                            s.Gamemode.Equals(gamemode) &&
-                            s.UserId.Equals(userId) &&
+            return await HighScoresWithRank
+                .Where(s => s.BeatmapHash == mapHash &&
+                            s.Gamemode == (byte)gamemode &&
+                            s.UserId == userId &&
                             s.Passed)
                 .Include(s => s.User)
                 .FirstOrDefaultAsync();
