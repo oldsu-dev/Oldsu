@@ -8,7 +8,7 @@ namespace Oldsu.DatabaseServices.MySql
 {
     public class MySqlBeatmapService : DbContext, IBeatmapService
     {
-        public DbSet<Beatmap> Beatmaps { get; set; }
+        private DbSet<Beatmap> Beatmaps { get; set; }
 
         public async Task<Beatmap?> GetBeatmapAsync(string mapHash)
         {
