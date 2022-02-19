@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Oldsu.Enums;
 using Oldsu.Types;
 
 namespace Oldsu.DatabaseServices.MySql
@@ -10,21 +11,22 @@ namespace Oldsu.DatabaseServices.MySql
     public class MySqlScoreService : DbContext, IScoreService
     {
         private DbSet<ScoreRow> Scores { get; set; }
+        private DbSet<HighScoreWithRank?> HighScoreWithRanks { get; set; }
 
-        public IAsyncEnumerable<ScoreRow> GetScoresByMapHashAsync(string mapHash)
+        public async Task<List<HighScoreWithRank>?> GetHighScoresOnMap(string mapHash, Mode gamemode)
         {
-            return Scores
-                .Include(s => s.Beatmap)
-                .Where(s => s.BeatmapHash.Equals(mapHash))
-                .AsAsyncEnumerable();
+            throw new NotImplementedException();
         }
 
-        public IAsyncEnumerable<ScoreRow> GetScoresByMapIdAsync(uint mapId)
+        public async Task<HighScoreWithRank?> GetHighScoreOnMap(string mapHash, Mode gamemode, uint userId)
         {
-            return Scores
-                .Include(s => s.Beatmap)
-                .Where(s => s.Beatmap.BeatmapID.Equals(mapId))
-                .AsAsyncEnumerable();
+            return await HighScoreWithRanks
+                .Where(s => s.BeatmapHash.Equals(mapHash) &&
+                            s.Gamemode.Equals(gamemode) &&
+                            s.UserId.Equals(userId) &&
+                            s.Passed)
+                .Include(s => s.User)
+                .FirstOrDefaultAsync();
         }
 
         public async Task AddScoreAsync(ScoreRow score)
