@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Oldsu.Enums;
@@ -9,19 +10,29 @@ namespace Oldsu.Services.MySql
 {
     public class MySqlScoreService : DbContext, IScoreService
     {
+        private DbSet<ScoreRow> Scores { get; set; }
+
         public IAsyncEnumerable<ScoreRow> GetScoresByMapHashAsync(string mapHash)
         {
-            throw new NotImplementedException();
+            return Scores
+                .Include(s => s.Beatmap)
+                .Where(s => s.BeatmapHash.Equals(mapHash))
+                .AsAsyncEnumerable();
         }
 
         public IAsyncEnumerable<ScoreRow> GetScoresByMapIdAsync(uint mapId)
         {
-            throw new NotImplementedException();
+            return Scores
+                .Include(s => s.Beatmap)
+                .Where(s => s.Beatmap.BeatmapID.Equals(mapId))
+                .AsAsyncEnumerable();
         }
 
         public async Task AddScoreAsync(ScoreRow score)
         {
-            throw new NotImplementedException();
+            await Scores.AddAsync(score);
+
+            await SaveChangesAsync();
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder options)
