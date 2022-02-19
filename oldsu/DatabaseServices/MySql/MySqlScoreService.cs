@@ -13,9 +13,17 @@ namespace Oldsu.DatabaseServices.MySql
         private DbSet<ScoreRow> Scores { get; set; }
         private DbSet<HighScoreWithRank?> HighScoreWithRanks { get; set; }
 
-        public async Task<List<HighScoreWithRank>?> GetHighScoresOnMap(string mapHash, Mode gamemode)
+        public async Task<List<HighScoreWithRank?>> GetHighScoresOnMap(string mapHash, Mode gamemode, int limit)
         {
-            throw new NotImplementedException();
+            return await HighScoreWithRanks
+                .Where(s => s.BeatmapHash.Equals(mapHash) &&
+                            s.Gamemode.Equals(gamemode) &&
+                            s.Passed)
+                .Include(s => s.User)
+                .OrderByDescending(s => s.Score)
+                .Take(limit)
+                .AsQueryable()
+                .ToListAsync();
         }
 
         public async Task<HighScoreWithRank?> GetHighScoreOnMap(string mapHash, Mode gamemode, uint userId)
