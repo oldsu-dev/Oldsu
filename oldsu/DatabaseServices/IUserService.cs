@@ -1,4 +1,4 @@
-﻿namespace Oldsu.Services
+﻿namespace Oldsu.DatabaseServices
 {
     public interface IUserService
     {

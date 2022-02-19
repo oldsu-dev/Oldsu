@@ -2,7 +2,7 @@
 using Oldsu.Enums;
 using Oldsu.Types;
 
-namespace Oldsu.Services
+namespace Oldsu.DatabaseServices
 {
     public interface IStatService
     {

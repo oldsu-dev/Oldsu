@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Oldsu.Services.MySql
+namespace Oldsu.DatabaseServices.MySql
 {
     public class MySqlUserService : DbContext, IUserService
     {

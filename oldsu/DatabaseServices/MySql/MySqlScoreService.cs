@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Oldsu.Enums;
 using Oldsu.Types;
 
-namespace Oldsu.Services.MySql
+namespace Oldsu.DatabaseServices.MySql
 {
     public class MySqlScoreService : DbContext, IScoreService
     {
