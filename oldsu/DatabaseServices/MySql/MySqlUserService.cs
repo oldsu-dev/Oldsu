@@ -9,7 +9,8 @@ namespace Oldsu.DatabaseServices.MySql
     public class MySqlUserService : DbContext, IUserService
     {
         private DbSet<AuthenticationPair> AuthenticationPairs { get; set; }
-        
+        private DbSet<UserInfo> UserInfo { get; set; }
+
         public async Task<UserInfo?> AuthenticateAsync(string username, string passwordHash)
         {
             var authenticationPair = await AuthenticationPairs
@@ -24,7 +25,12 @@ namespace Oldsu.DatabaseServices.MySql
             
             return null;
         }
-        
+
+        public async Task<UserInfo?> GetUserInfo(uint userId)
+        {
+            return await UserInfo.FindAsync(userId);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseMySql(
