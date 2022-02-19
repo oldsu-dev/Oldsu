@@ -13,7 +13,7 @@ namespace Oldsu.DatabaseServices.MySql
         private DbSet<ScoreRow> Scores { get; set; }
         private DbSet<HighScoreWithRank?> HighScoreWithRanks { get; set; }
 
-        public async Task<List<HighScoreWithRank?>> GetHighScoresOnMap(string mapHash, Mode gamemode, int limit)
+        public async Task<List<HighScoreWithRank?>> GetHighScoresOnMapAsync(string mapHash, Mode gamemode, int limit)
         {
             return await HighScoreWithRanks
                 .Where(s => s.BeatmapHash.Equals(mapHash) &&
@@ -26,7 +26,7 @@ namespace Oldsu.DatabaseServices.MySql
                 .ToListAsync();
         }
 
-        public async Task<HighScoreWithRank?> GetHighScoreOnMap(string mapHash, Mode gamemode, uint userId)
+        public async Task<HighScoreWithRank?> GetHighScoreOnMapAsync(string mapHash, Mode gamemode, uint userId)
         {
             return await HighScoreWithRanks
                 .Where(s => s.BeatmapHash.Equals(mapHash) &&
