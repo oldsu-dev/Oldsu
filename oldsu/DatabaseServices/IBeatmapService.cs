@@ -6,5 +6,6 @@ namespace Oldsu.DatabaseServices
     public interface IBeatmapService
     {
         public Task<Beatmap?> GetBeatmapAsync(string mapHash);
+        public Task<Beatmapset?> GetBeatmapsetAsync(int beatmapId);
     }
 }

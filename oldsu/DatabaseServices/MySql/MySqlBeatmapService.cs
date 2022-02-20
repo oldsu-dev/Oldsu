@@ -19,6 +19,13 @@ namespace Oldsu.DatabaseServices.MySql
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Beatmapset?> GetBeatmapsetAsync(int beatmapId)
+        {
+            return await Beatmapsets
+                .Where(b => b.BeatmapsetID == beatmapId)
+                .FirstOrDefaultAsync();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseMySql(
