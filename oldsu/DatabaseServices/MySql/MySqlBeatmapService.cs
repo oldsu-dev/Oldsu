@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Oldsu.Types;
+using Oldsu.Utils.Paginator;
 
 namespace Oldsu.DatabaseServices.MySql
 {
@@ -25,6 +26,9 @@ namespace Oldsu.DatabaseServices.MySql
                 .Where(b => b.BeatmapsetID == beatmapId)
                 .FirstOrDefaultAsync();
         }
+
+        public IPaginator<Beatmapset> GetBeatmapPaginator(int rowsPerPage) =>
+            new MySqlEntityFrameworkPaginator<Beatmapset>(Beatmapsets, rowsPerPage);
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
