@@ -11,6 +11,8 @@ namespace Oldsu.Types
     {
         [Key]
         public uint UserID { get; set; }
+        
+        public virtual UserInfo User { get; set; }
 
         [Required]
         public Mode Mode { get; set; }
