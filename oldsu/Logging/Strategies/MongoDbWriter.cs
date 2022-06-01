@@ -39,23 +39,44 @@ namespace Oldsu.Logging.Strategies
 
         public async Task LogInfo<T>(string message, Exception? exception, object? dump, int lineNumber, string caller)
         {
-            var bsonDoc = GetBsonDocument<T>("info", message, exception, dump, lineNumber, caller);
-            
-            await _mongoCollection.InsertOneAsync(bsonDoc);
+            try
+            {
+                var bsonDoc = GetBsonDocument<T>("info", message, exception, dump, lineNumber, caller);
+
+                await _mongoCollection.InsertOneAsync(bsonDoc);
+            }
+            catch
+            {
+                //ignored
+            }
         }
 
         public async Task LogCritical<T>(string message, Exception? exception, object? dump, int lineNumber, string caller)
         {
-            var bsonDoc = GetBsonDocument<T>("critical", message, exception, dump, lineNumber, caller);
-            
-            await _mongoCollection.InsertOneAsync(bsonDoc);
+            try
+            {
+                var bsonDoc = GetBsonDocument<T>("critical", message, exception, dump, lineNumber, caller);
+                
+                await _mongoCollection.InsertOneAsync(bsonDoc);
+            }
+            catch
+            {
+                //ignored
+            }
         }
 
         public async Task LogFatal<T>(string message, Exception? exception, object? dump, int lineNumber, string caller)
         {
-            var bsonDoc = GetBsonDocument<T>("Fatal", message, exception, dump, lineNumber, caller);
-            
-            await _mongoCollection.InsertOneAsync(bsonDoc);
+            try
+            {
+                var bsonDoc = GetBsonDocument<T>("Fatal", message, exception, dump, lineNumber, caller);
+
+                await _mongoCollection.InsertOneAsync(bsonDoc);
+            }
+            catch
+            {
+                //ignored
+            }
         }
     }
 }
