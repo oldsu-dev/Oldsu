@@ -29,5 +29,6 @@ namespace Oldsu.Types
         public uint RatingCount { get; set; }
         
         public uint LanguageId { get; set; }
+        public bool IsHidden { get; set; }
     }
 }

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.26, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.28, for Linux (x86_64)
 --
--- Host: localhost    Database: oldsu
+-- Host: 127.0.0.1    Database: oldsu_dev
 -- ------------------------------------------------------
--- Server version	8.0.26
+-- Server version	8.0.28-0ubuntu0.20.04.3
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -60,7 +60,7 @@ CREATE TABLE `Badges` (
   `UserID` int unsigned NOT NULL,
   `Filename` tinytext NOT NULL,
   KEY `fk_bages_user_id_idx` (`UserID`),
-  CONSTRAINT `fk_badges_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
+  CONSTRAINT `fk_Badges_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -81,7 +81,7 @@ CREATE TABLE `Beatmaps` (
   `HP` float NOT NULL,
   `CS` float NOT NULL,
   `OD` float NOT NULL,
-  `AR` int unsigned NOT NULL,
+  `AR` float unsigned NOT NULL,
   `SR` float NOT NULL,
   `BPM` float unsigned NOT NULL,
   `SliderMultiplier` double NOT NULL DEFAULT '0',
@@ -95,12 +95,35 @@ CREATE TABLE `Beatmaps` (
   `CountSpinner` int unsigned NOT NULL,
   `HasStoryboard` tinyint unsigned NOT NULL,
   `HasVideo` tinyint NOT NULL,
+  `Filename` text NOT NULL,
   PRIMARY KEY (`BeatmapHash`,`BeatmapID`),
   UNIQUE KEY `BeatmapID_UNIQUE` (`BeatmapID`),
-  KEY `fk_beatmapset_idx_idx` (`BeatmapsetID`),
-  CONSTRAINT `fk_beatmapset_idx` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=114458 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_Beatmapset_idx_idx` (`BeatmapsetID`),
+  CONSTRAINT `fk_Beatmapset_idx` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=111866 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary view structure for view `BeatmapsWithScoreCount`
+--
+
+DROP TABLE IF EXISTS `BeatmapsWithScoreCount`;
+/*!50001 DROP VIEW IF EXISTS `BeatmapsWithScoreCount`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `BeatmapsWithScoreCount` AS SELECT 
+ 1 AS `ScoreCount`,
+ 1 AS `BeatmapHash`,
+ 1 AS `BeatmapID`,
+ 1 AS `BeatmapsetID`,
+ 1 AS `HP`,
+ 1 AS `CS`,
+ 1 AS `OD`,
+ 1 AS `SR`,
+ 1 AS `BPM`,
+ 1 AS `SliderMultiplier`,
+ 1 AS `Mode`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `Beatmapsets`
@@ -125,12 +148,31 @@ CREATE TABLE `Beatmapsets` (
   `Rating` float unsigned NOT NULL DEFAULT '0',
   `RatingCount` int unsigned NOT NULL DEFAULT '0',
   `LanguageId` int unsigned NOT NULL DEFAULT '0',
+  `DisplayedTitle` text,
   PRIMARY KEY (`BeatmapsetID`),
   UNIQUE KEY `BeatmapsetID_UNIQUE` (`BeatmapsetID`),
   UNIQUE KEY `OriginalBeatmapsetID_UNIQUE` (`OriginalBeatmapsetID`),
-  KEY `fk_beatmapset_creator_id_idx` (`CreatorID`),
-  CONSTRAINT `fk_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `UserInfo` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=186923 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_Beatmapset_creator_id_idx` (`CreatorID`),
+  CONSTRAINT `fk_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `UserInfo` (`UserID`) ON DELETE SET NULL ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=184328 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `EmailConfirmationTokens`
+--
+
+DROP TABLE IF EXISTS `EmailConfirmationTokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `EmailConfirmationTokens` (
+  `Token` char(184) NOT NULL,
+  `PendingUsername` varchar(32) NOT NULL,
+  `PendingPassword` char(60) NOT NULL,
+  `PendingEmail` tinytext NOT NULL,
+  `Country` tinyint NOT NULL,
+  `ExpiresAt` datetime NOT NULL DEFAULT (addtime(now(),_utf8mb4'1800')),
+  PRIMARY KEY (`Token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,10 +185,10 @@ DROP TABLE IF EXISTS `Friends`;
 CREATE TABLE `Friends` (
   `UserID` int unsigned NOT NULL,
   `FriendUserID` int unsigned NOT NULL,
-  PRIMARY KEY (`UserID`),
-  KEY `fk_friends_friend_userid_idx` (`FriendUserID`),
-  CONSTRAINT `fk_friends_friend_userid` FOREIGN KEY (`FriendUserID`) REFERENCES `UserInfo` (`UserID`),
-  CONSTRAINT `fk_friends_userid` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`)
+  KEY `fk_Friends_friend_userid_idx` (`FriendUserID`),
+  KEY `fk_Friends_1_idx` (`UserID`),
+  CONSTRAINT `fk_Friends_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`),
+  CONSTRAINT `fk_Friends_friend_userid` FOREIGN KEY (`FriendUserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -165,14 +207,14 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `HighscoresWithRank`
+-- Temporary view structure for view `HighScoresWithRank`
 --
 
-DROP TABLE IF EXISTS `HighscoresWithRank`;
-/*!50001 DROP VIEW IF EXISTS `HighscoresWithRank`*/;
+DROP TABLE IF EXISTS `HighScoresWithRank`;
+/*!50001 DROP VIEW IF EXISTS `HighScoresWithRank`*/;
 SET @saved_cs_client     = @@character_set_client;
 /*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `HighscoresWithRank` AS SELECT 
+/*!50001 CREATE VIEW `HighScoresWithRank` AS SELECT 
  1 AS `Rank`,
  1 AS `ScoreID`,
  1 AS `BeatmapHash`,
@@ -230,23 +272,6 @@ CREATE TABLE `OffenceHistory` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `PendingRegistrations`
---
-
-DROP TABLE IF EXISTS `PendingRegistrations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `PendingRegistrations` (
-  `Token` char(128) NOT NULL,
-  `Username` varchar(32) NOT NULL,
-  `Password` char(60) NOT NULL,
-  `Email` tinytext NOT NULL,
-  `Country` tinyint NOT NULL,
-  PRIMARY KEY (`Token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `RankHistory`
 --
 
@@ -258,11 +283,12 @@ CREATE TABLE `RankHistory` (
   `UserID` int unsigned NOT NULL,
   `Rank` int unsigned NOT NULL,
   `Date` date NOT NULL DEFAULT (curdate()),
+  `Mode` tinyint NOT NULL,
   PRIMARY KEY (`RankHistoryID`),
   UNIQUE KEY `RankHistoryID_UNIQUE` (`RankHistoryID`),
   KEY `fk_RankHistory_1_idx` (`UserID`),
-  CONSTRAINT `fk_RankHistory_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=256 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_RankHistory_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=1861 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,14 +299,13 @@ DROP TABLE IF EXISTS `Ratings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Ratings` (
-  `UserID` int unsigned NOT NULL,
-  `BeatmapSetID` int NOT NULL,
+  `BeatmapsetID` int NOT NULL,
+  `UserID` int unsigned DEFAULT NULL,
   `Rate` float unsigned NOT NULL,
-  PRIMARY KEY (`UserID`),
   KEY `fk_rating_user_id_idx` (`UserID`),
-  KEY `fk_rating_beatmap_set_id_idx` (`BeatmapSetID`),
-  CONSTRAINT `fk_rating_beatmap_set_id` FOREIGN KEY (`BeatmapSetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`),
-  CONSTRAINT `fk_rating_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`)
+  KEY `fk_rating_beatmap_set_id_idx` (`BeatmapsetID`),
+  CONSTRAINT `fk_rating_beatmap_set_id` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_rating_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -311,14 +336,12 @@ CREATE TABLE `Scores` (
   `Ranked` tinyint unsigned NOT NULL,
   `SubmitHash` char(64) NOT NULL,
   `SubmittedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Version` varchar(5) NOT NULL,
+  `Version` varchar(32) NOT NULL,
   PRIMARY KEY (`ScoreID`),
   UNIQUE KEY `ScoreID_UNIQUE` (`ScoreID`),
-  KEY `fk_user_id_idx` (`BeatmapHash`),
   KEY `fk_beatmap_hash_idx` (`UserID`) /*!80000 INVISIBLE */,
-  CONSTRAINT `fk_scores_beatmap_hash` FOREIGN KEY (`BeatmapHash`) REFERENCES `Beatmaps` (`BeatmapHash`),
-  CONSTRAINT `fk_scores_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_Scores_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2002 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -329,7 +352,7 @@ DROP TABLE IF EXISTS `SessionTokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SessionTokens` (
-  `Token` char(128) NOT NULL,
+  `Token` char(184) NOT NULL,
   `ExpiresAt` datetime NOT NULL,
   `UserID` int unsigned NOT NULL,
   PRIMARY KEY (`Token`),
@@ -418,10 +441,11 @@ CREATE TABLE `UserInfo` (
   `BannedReason` text,
   `Email` tinytext NOT NULL,
   `Privileges` tinyint unsigned NOT NULL DEFAULT '1',
+  `HasAvatar` tinyint NOT NULL DEFAULT '0',
   `JoinedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`UserID`),
+  PRIMARY KEY (`UserID`,`Username`),
   UNIQUE KEY `UserID_UNIQUE` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=180 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -440,15 +464,53 @@ CREATE TABLE `UserPages` (
   `Twitter` tinytext,
   `Discord` tinytext,
   `Title` tinytext,
-  `BBText` mediumtext,
+  `BBText` text,
   UNIQUE KEY `UserID_UNIQUE` (`UserID`),
   CONSTRAINT `fk_userid` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping routines for database 'oldsu'
+-- Dumping routines for database 'oldsu_dev'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `clean_expired_email_confirmation_tokens` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`eevee`@`localhost` PROCEDURE `clean_expired_email_confirmation_tokens`()
+BEGIN
+	DELETE FROM EmailConfirmationTokens WHERE NOW() > ExpiresAt;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `clean_expired_tokens` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`eevee`@`localhost` PROCEDURE `clean_expired_tokens`()
+BEGIN
+	DELETE FROM SessionTokens WHERE NOW() > ExpiresAt;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `save_current_ranks` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -459,9 +521,9 @@ CREATE TABLE `UserPages` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`%` PROCEDURE `save_current_ranks`()
+CREATE DEFINER=`eevee`@`localhost` PROCEDURE `save_current_ranks`()
 BEGIN
-    INSERT INTO RankHistory (UserID, `Rank`) SELECT UserID, `Rank` from StatsWithRank;
+    INSERT INTO RankHistory (UserID, `Rank`, `Mode`) SELECT UserID, `Rank`, `Mode` from StatsWithRank;
 	
 	DELETE FROM
 		RankHistory r1
@@ -501,6 +563,24 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Final view structure for view `BeatmapsWithScoreCount`
+--
+
+/*!50001 DROP VIEW IF EXISTS `BeatmapsWithScoreCount`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `BeatmapsWithScoreCount` AS select count(0) AS `ScoreCount`,`Beatmaps`.`BeatmapHash` AS `BeatmapHash`,`Beatmaps`.`BeatmapID` AS `BeatmapID`,`Beatmaps`.`BeatmapsetID` AS `BeatmapsetID`,`Beatmaps`.`HP` AS `HP`,`Beatmaps`.`CS` AS `CS`,`Beatmaps`.`OD` AS `OD`,`Beatmaps`.`SR` AS `SR`,`Beatmaps`.`BPM` AS `BPM`,`Beatmaps`.`SliderMultiplier` AS `SliderMultiplier`,`Beatmaps`.`Mode` AS `Mode` from (`HighScoresWithRank` join `Beatmaps` on((`HighScoresWithRank`.`BeatmapHash` = `Beatmaps`.`BeatmapHash`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `FriendsWithMutual`
 --
 
@@ -519,10 +599,10 @@ DELIMITER ;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
--- Final view structure for view `HighscoresWithRank`
+-- Final view structure for view `HighScoresWithRank`
 --
 
-/*!50001 DROP VIEW IF EXISTS `HighscoresWithRank`*/;
+/*!50001 DROP VIEW IF EXISTS `HighScoresWithRank`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -531,7 +611,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `HighscoresWithRank` AS with `gt` as (select `Scores`.`Gamemode` AS `Gamemode`,`Scores`.`BeatmapHash` AS `BeatmapHash`,`Scores`.`UserID` AS `UserID`,max(`Scores`.`Score`) AS `MaxScore` from `Scores` where (0 <> `Scores`.`Passed`) group by `Scores`.`UserID`,`Scores`.`BeatmapHash`,`Scores`.`Gamemode`) select row_number() OVER (PARTITION BY `s`.`BeatmapHash`,`s`.`Gamemode` ORDER BY `s`.`Score` desc )  AS `Rank`,`s`.`ScoreID` AS `ScoreID`,`s`.`BeatmapHash` AS `BeatmapHash`,`s`.`UserID` AS `UserID`,`s`.`Score` AS `Score`,`s`.`MaxCombo` AS `MaxCombo`,`s`.`Hit300` AS `Hit300`,`s`.`Hit100` AS `Hit100`,`s`.`Hit50` AS `Hit50`,`s`.`HitMiss` AS `HitMiss`,`s`.`HitGeki` AS `HitGeki`,`s`.`HitKatu` AS `HitKatu`,`s`.`Mods` AS `Mods`,`s`.`Grade` AS `Grade`,`s`.`Perfect` AS `Perfect`,`s`.`Passed` AS `Passed`,`s`.`Ranked` AS `Ranked`,`s`.`SubmitHash` AS `SubmitHash`,`s`.`SubmittedAt` AS `SubmittedAt`,`s`.`Gamemode` AS `Gamemode` from (select `s`.`ScoreID` AS `ScoreID`,`s`.`BeatmapHash` AS `BeatmapHash`,`s`.`UserID` AS `UserID`,`s`.`Score` AS `Score`,`s`.`MaxCombo` AS `MaxCombo`,`s`.`Hit300` AS `Hit300`,`s`.`Hit100` AS `Hit100`,`s`.`Hit50` AS `Hit50`,`s`.`HitMiss` AS `HitMiss`,`s`.`HitGeki` AS `HitGeki`,`s`.`HitKatu` AS `HitKatu`,`s`.`Mods` AS `Mods`,`s`.`Grade` AS `Grade`,`s`.`Perfect` AS `Perfect`,`s`.`Passed` AS `Passed`,`s`.`Ranked` AS `Ranked`,`s`.`SubmitHash` AS `SubmitHash`,`s`.`SubmittedAt` AS `SubmittedAt`,`s`.`Gamemode` AS `Gamemode` from (`Scores` `s` join `gt` on(((`gt`.`UserID` = `s`.`UserID`) and (`gt`.`MaxScore` = `s`.`Score`) and (`gt`.`BeatmapHash` = `s`.`BeatmapHash`) and (`gt`.`Gamemode` = `s`.`Gamemode`)))) order by `s`.`Score` desc) `s` */;
+/*!50001 VIEW `HighScoresWithRank` AS with `gt` as (select `Scores`.`Gamemode` AS `Gamemode`,`Scores`.`BeatmapHash` AS `BeatmapHash`,`Scores`.`UserID` AS `UserID`,max(`Scores`.`Score`) AS `MaxScore` from `Scores` where (0 <> `Scores`.`Passed`) group by `Scores`.`UserID`,`Scores`.`BeatmapHash`,`Scores`.`Gamemode`) select row_number() OVER (PARTITION BY `s`.`BeatmapHash`,`s`.`Gamemode` ORDER BY `s`.`Score` desc )  AS `Rank`,`s`.`ScoreID` AS `ScoreID`,`s`.`BeatmapHash` AS `BeatmapHash`,`s`.`UserID` AS `UserID`,`s`.`Score` AS `Score`,`s`.`MaxCombo` AS `MaxCombo`,`s`.`Hit300` AS `Hit300`,`s`.`Hit100` AS `Hit100`,`s`.`Hit50` AS `Hit50`,`s`.`HitMiss` AS `HitMiss`,`s`.`HitGeki` AS `HitGeki`,`s`.`HitKatu` AS `HitKatu`,`s`.`Mods` AS `Mods`,`s`.`Grade` AS `Grade`,`s`.`Perfect` AS `Perfect`,`s`.`Passed` AS `Passed`,`s`.`Ranked` AS `Ranked`,`s`.`SubmitHash` AS `SubmitHash`,`s`.`SubmittedAt` AS `SubmittedAt`,`s`.`Gamemode` AS `Gamemode` from (select `s`.`ScoreID` AS `ScoreID`,`s`.`BeatmapHash` AS `BeatmapHash`,`s`.`UserID` AS `UserID`,`s`.`Score` AS `Score`,`s`.`MaxCombo` AS `MaxCombo`,`s`.`Hit300` AS `Hit300`,`s`.`Hit100` AS `Hit100`,`s`.`Hit50` AS `Hit50`,`s`.`HitMiss` AS `HitMiss`,`s`.`HitGeki` AS `HitGeki`,`s`.`HitKatu` AS `HitKatu`,`s`.`Mods` AS `Mods`,`s`.`Grade` AS `Grade`,`s`.`Perfect` AS `Perfect`,`s`.`Passed` AS `Passed`,`s`.`Ranked` AS `Ranked`,`s`.`SubmitHash` AS `SubmitHash`,`s`.`SubmittedAt` AS `SubmittedAt`,`s`.`Gamemode` AS `Gamemode` from (`Scores` `s` join `gt` on(((`gt`.`UserID` = `s`.`UserID`) and (`gt`.`MaxScore` = `s`.`Score`) and (`gt`.`BeatmapHash` = `s`.`BeatmapHash`) and (`gt`.`Gamemode` = `s`.`Gamemode`)))) order by `s`.`Score` desc) `s` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -563,4 +643,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-09-19 18:20:29
+-- Dump completed on 2022-02-18 16:19:26
