@@ -23,8 +23,6 @@ namespace Oldsu.DatabaseServices.MySql
         {
             var stats = await StatsWithRank.Where(st => st.UserID == userId && st.Mode == mode).AsNoTracking().FirstOrDefaultAsync();
 
-            Attach((Stats) stats);
-
             return stats;
         }
 

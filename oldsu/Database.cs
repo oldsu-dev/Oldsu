@@ -23,6 +23,13 @@ namespace Oldsu
         }
 
         public DbSet<StatsWithRank> StatsWithRank { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<StatsWithRank>();
+        }
 
         public Task<StatsWithRank> GetStatsWithRankAsync(uint userId, uint mode, CancellationToken cancellationToken = default) =>
             StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync(cancellationToken);
@@ -164,7 +171,31 @@ namespace Oldsu
             
             return null;
         }
-        
+
+        public async Task RequirePasswordChange(uint userId, string token)
+        {
+            var transaction = await this.Database.BeginTransactionAsync();
+
+            try
+            {
+                PasswordChangeToken userInfo = new PasswordChangeToken()
+                {
+                    Token = token,
+                    UserID = userId
+                };
+                
+                this.PasswordChangeTokens.Add(userInfo);
+                await this.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task RequireEmailConfirmation(string token, string username, string email, string passwordHash, byte country)
         {
             string bcrypt = BCrypt.Net.BCrypt.HashPassword(passwordHash);
@@ -255,6 +286,36 @@ namespace Oldsu
             }
         }
 
+        public async Task<bool> ChangePasswordAsync(string tokenIdentifier, string passwordHash)
+        {
+            string bcrypt = BCrypt.Net.BCrypt.HashPassword(passwordHash);
+            
+            var transaction = await this.Database.BeginTransactionAsync();
+
+            try
+            {
+                PasswordChangeToken? token = await PasswordChangeTokens.FindAsync(tokenIdentifier);
+
+                if (token == null)
+                    return false;
+                
+                Entry(new AuthenticationPair
+                    {UserID = token.UserID, Password = bcrypt}).State = EntityState.Modified;
+
+                PasswordChangeTokens.Remove(token);
+                
+                await this.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        
         /// <summary>
         ///     Checks if user is valid for registration.
         /// </summary>
@@ -330,6 +391,7 @@ namespace Oldsu
                 stats.Hit50, stats.HitMiss, stats.UserID, stats.Mode);
         }
 
+        public DbSet<EmailChangeToken> EmailChangeTokens { get; set; }
         public DbSet<UserInfo> UserInfo { get; set; }
         public DbSet<Stats> Stats { get; set; }
         
@@ -355,6 +417,7 @@ namespace Oldsu
         public DbSet<Badge> Badges { get; set; }
 
         public DbSet<EmailConfirmationToken> EmailConfirmationTokens { get; set; }
+        public DbSet<PasswordChangeToken> PasswordChangeTokens { get; set; }
         public DbSet<Session> SessionTokens { get; set; }
     }
 }
