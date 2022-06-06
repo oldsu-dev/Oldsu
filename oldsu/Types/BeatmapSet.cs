@@ -1,3 +1,4 @@
+using Oldsu.Enums;
 using System;
 
 namespace Oldsu.Types
@@ -18,7 +19,7 @@ namespace Oldsu.Types
 
         public string? DisplayedTitle { get; set; }
 
-        public byte RankingStatus { get; set; }
+        public RankingStatus RankingStatus { get; set; }
 
         public string? RankedBy { get; set; }
 
