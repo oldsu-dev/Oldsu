@@ -18,7 +18,7 @@ namespace Oldsu.Types
 
         public string? DisplayedTitle { get; set; }
 
-        public byte RankingStatus { get; set; }
+        public sbyte RankingStatus { get; set; }
 
         public string? RankedBy { get; set; }
 
