@@ -1,6 +1,6 @@
 namespace Oldsu.Enums
 {
-    public enum RankingStatus
+    public enum RankingStatus : sbyte
     {
         Graveyard = -2,
         WIP = -1,
