@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.28, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.29, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: oldsu_dev
 -- ------------------------------------------------------
--- Server version	8.0.28-0ubuntu0.20.04.3
+-- Server version	8.0.29-0ubuntu0.20.04.3
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -99,7 +99,7 @@ CREATE TABLE `Beatmaps` (
   PRIMARY KEY (`BeatmapHash`,`BeatmapID`),
   UNIQUE KEY `BeatmapID_UNIQUE` (`BeatmapID`),
   KEY `fk_Beatmapset_idx_idx` (`BeatmapsetID`),
-  CONSTRAINT `fk_Beatmapset_idx` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT `fk_Beatmapset_idx` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=111866 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -126,6 +126,25 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Table structure for table `BeatmapsetInfo`
+--
+
+DROP TABLE IF EXISTS `BeatmapsetInfo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `BeatmapsetInfo` (
+  `BeatmapsetID` int NOT NULL,
+  `Subject` mediumtext NOT NULL,
+  `Message` mediumtext NOT NULL,
+  `BumpRequest` tinyint NOT NULL,
+  `Complete` tinyint NOT NULL,
+  `Notify` tinyint NOT NULL,
+  UNIQUE KEY `BeatmapsetID_UNIQUE` (`BeatmapsetID`),
+  CONSTRAINT `beatmapsetinfo_beatmapset_id` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `Beatmapsets`
 --
 
@@ -149,12 +168,32 @@ CREATE TABLE `Beatmapsets` (
   `RatingCount` int unsigned NOT NULL DEFAULT '0',
   `LanguageId` int unsigned NOT NULL DEFAULT '0',
   `DisplayedTitle` text,
+  `IsHidden` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`BeatmapsetID`),
   UNIQUE KEY `BeatmapsetID_UNIQUE` (`BeatmapsetID`),
   UNIQUE KEY `OriginalBeatmapsetID_UNIQUE` (`OriginalBeatmapsetID`),
   KEY `fk_Beatmapset_creator_id_idx` (`CreatorID`),
   CONSTRAINT `fk_creator_id` FOREIGN KEY (`CreatorID`) REFERENCES `UserInfo` (`UserID`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=184328 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1000000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `EmailChangeTokens`
+--
+
+DROP TABLE IF EXISTS `EmailChangeTokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `EmailChangeTokens` (
+  `Token` char(184) NOT NULL,
+  `Email` tinytext NOT NULL,
+  `UserID` int unsigned NOT NULL,
+  `ExpiresAt` datetime NOT NULL DEFAULT (addtime(now(),_utf8mb4'1800')),
+  PRIMARY KEY (`Token`),
+  UNIQUE KEY `Token_UNIQUE` (`Token`),
+  KEY `fk_EmailChangeTokens_1_idx` (`UserID`),
+  CONSTRAINT `fk_EmailChangeTokens_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,6 +311,23 @@ CREATE TABLE `OffenceHistory` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `PasswordChangeTokens`
+--
+
+DROP TABLE IF EXISTS `PasswordChangeTokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PasswordChangeTokens` (
+  `Token` char(184) NOT NULL,
+  `UserID` int unsigned NOT NULL,
+  `ExpiresAt` datetime NOT NULL DEFAULT (addtime(now(),_utf8mb4'1800')),
+  PRIMARY KEY (`Token`),
+  KEY `fk_PasswordChangeToken_1_idx` (`UserID`),
+  CONSTRAINT `fk_PasswordChangeToken_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `RankHistory`
 --
 
@@ -288,7 +344,7 @@ CREATE TABLE `RankHistory` (
   UNIQUE KEY `RankHistoryID_UNIQUE` (`RankHistoryID`),
   KEY `fk_RankHistory_1_idx` (`UserID`),
   CONSTRAINT `fk_RankHistory_1` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=1861 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5049 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -304,7 +360,7 @@ CREATE TABLE `Ratings` (
   `Rate` float unsigned NOT NULL,
   KEY `fk_rating_user_id_idx` (`UserID`),
   KEY `fk_rating_beatmap_set_id_idx` (`BeatmapsetID`),
-  CONSTRAINT `fk_rating_beatmap_set_id` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_rating_beatmap_set_id` FOREIGN KEY (`BeatmapsetID`) REFERENCES `Beatmapsets` (`BeatmapsetID`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_rating_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -341,7 +397,7 @@ CREATE TABLE `Scores` (
   UNIQUE KEY `ScoreID_UNIQUE` (`ScoreID`),
   KEY `fk_beatmap_hash_idx` (`UserID`) /*!80000 INVISIBLE */,
   CONSTRAINT `fk_Scores_user_id` FOREIGN KEY (`UserID`) REFERENCES `UserInfo` (`UserID`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2002 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2046 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -439,13 +495,14 @@ CREATE TABLE `UserInfo` (
   `Country` tinyint unsigned NOT NULL,
   `Banned` tinyint unsigned NOT NULL DEFAULT '0',
   `BannedReason` text,
-  `Email` tinytext NOT NULL,
+  `Email` varchar(256) NOT NULL,
   `Privileges` tinyint unsigned NOT NULL DEFAULT '1',
   `HasAvatar` tinyint NOT NULL DEFAULT '0',
   `JoinedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserID`,`Username`),
-  UNIQUE KEY `UserID_UNIQUE` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `UserID_UNIQUE` (`UserID`),
+  UNIQUE KEY `Email_UNIQUE` (`Email`)
+) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -505,6 +562,8 @@ DELIMITER ;;
 CREATE DEFINER=`eevee`@`localhost` PROCEDURE `clean_expired_tokens`()
 BEGIN
 	DELETE FROM SessionTokens WHERE NOW() > ExpiresAt;
+	DELETE FROM EmailChangeTokens WHERE NOW() > ExpiresAt;
+	DELETE FROM PasswordChangeTokens WHERE NOW() > ExpiresAt;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -541,7 +600,7 @@ BEGIN
 							SELECT
 								RankHistoryID,
 								ROW_NUMBER() over (
-									PARTITION BY UserID
+									PARTITION BY UserID, Mode
 									ORDER BY
 										`Date`
 									DESC
@@ -643,4 +702,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-18 16:19:26
+-- Dump completed on 2022-06-09 16:22:20
