@@ -21,6 +21,8 @@ namespace Oldsu.Types
 
         public RankingStatus RankingStatus { get; set; }
 
+        public int OnlineOffset { get; set; }
+
         public string? RankedBy { get; set; }
 
         public DateTime SubmittedAt { get; set; }
