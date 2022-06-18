@@ -9,7 +9,7 @@ namespace Oldsu.Utils
 {
     public static class TypeExtensions
     {
-        public static void UpdateStats(this StatsWithRank stats, ScoreRow score)
+        public static void UpdateStats(this Stats stats, ScoreRow score)
         {
             stats.TotalScore += score.Score;
             stats.Playcount++;
@@ -28,16 +28,14 @@ namespace Oldsu.Utils
             }
         }
 
-        public static async Task<ScoreRow?> SerializeScoreString(string[] values)
+        public static async Task<ScoreRow?> SerializeScoreString(string[] values, uint userId)
         {
             try
             {
                 var score = new ScoreRow
                 {
                     // mmm only username is there
-                    User = await (new Database()).UserInfo
-                        .Where(u => u.Username.Equals(values[1]))
-                        .FirstOrDefaultAsync(),
+                    UserId = userId,
                     BeatmapHash = values[0],
                     SubmitHash = values[2],
                     Hit300 = uint.Parse(values[3]),
@@ -56,8 +54,6 @@ namespace Oldsu.Utils
                     SubmittedAt = DateTime.Now,
                 };
 
-                score.UserId = score.User.UserID;
-                
                 return score;
             }
             catch (IndexOutOfRangeException ex)

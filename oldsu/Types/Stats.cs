@@ -3,6 +3,7 @@ using Oldsu.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Oldsu.Types
@@ -10,8 +11,11 @@ namespace Oldsu.Types
     public class Stats
     {
         [Key]
+        public uint StatsID { get; set; }
+        
         public uint UserID { get; set; }
         
+        [ForeignKey(nameof(UserID))]
         public virtual UserInfo User { get; set; }
 
         [Required]
