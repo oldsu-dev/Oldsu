@@ -30,7 +30,7 @@ namespace Oldsu.Types
         public float Bpm { get; set; }
 
         public double SliderMultiplier { get; set; }
-        
+
         public Mode Mode { get; set; }
 
         public uint PassCount { get; set; }
@@ -45,6 +45,8 @@ namespace Oldsu.Types
 
         public bool HasStoryboard { get; set; }
         public bool HasVideo { get; set; }
+
+        public bool OverrideForApproval { get; set; }
         
         public string Filename { get; set; }
     }
