@@ -31,6 +31,32 @@ namespace Oldsu
             modelBuilder.Entity<StatsWithRank>();
         }
 
+        public async Task BanUser(string username, string reason)
+        {
+            UserInfo? userInfo = await UserInfo.Where(u => u.Username == username).FirstOrDefaultAsync();
+
+            if (userInfo == null)
+                throw new InvalidOperationException("User not found");
+
+            userInfo.Banned = true;
+            userInfo.BannedReason = reason;
+
+            await SaveChangesAsync();
+        }
+        
+        public async Task BanUser(uint userId, string reason)
+        {
+            UserInfo? userInfo = await UserInfo.FindAsync(userId);
+
+            if (userInfo == null)
+                throw new InvalidOperationException("User not found");
+
+            userInfo.Banned = true;
+            userInfo.BannedReason = reason;
+
+            await SaveChangesAsync();
+        }
+        
         public Task<StatsWithRank?> GetStatsWithRankAsync(uint userId, uint mode, CancellationToken cancellationToken = default) =>
             StatsWithRank.Where(st => st.UserID == userId && st.Mode == (Mode) mode).FirstOrDefaultAsync(cancellationToken);
 
