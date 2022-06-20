@@ -8,7 +8,7 @@ namespace Oldsu.Enums
     public enum Privileges
     {
         Normal = 1,
-        GMT = 2,
+        BAT = 2,
         Supporter = 4,
         Developer = 8
     }
