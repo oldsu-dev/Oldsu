@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -51,9 +52,9 @@ namespace Oldsu.Utils
                     Mods = ushort.Parse(values[13]),
                     Passed = values[14] == "True",
                     Gamemode = byte.Parse(values[15]),
-                    SubmittedAt = DateTime.Now,
+                    SubmittedAt = DateTime.ParseExact(values[16], "yyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal),
                 };
-
+                
                 return score;
             }
             catch (IndexOutOfRangeException ex)
