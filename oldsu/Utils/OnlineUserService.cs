@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -12,29 +13,21 @@ public class OnlineUserService : IOnlineUserService
 {
     public async Task<List<OnlineUser?>> GetOnlineUsers()
     {
-        List<OnlineUser?> users = new List<OnlineUser?>();
-        var url = $"https://oldsu.ayyeve.xyz";
-       
- 
+        List<OnlineUser> Users = null;
         HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri(url);
+        client.BaseAddress = new Uri($"https://oldsu.ayyeve.xyz");
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
         var serverEndpoint = Environment.GetEnvironmentVariable("OLDSU_BANCHO_ENDPOINT");
         HttpResponseMessage response = 
             await client.GetAsync($"http://${serverEndpoint}/api/users").ConfigureAwait(false);
- 
         if (response.IsSuccessStatusCode)
         {
-            var jsonString = await response.Content.ReadAsStringAsync();
-            OnlineUser? user = JsonSerializer.Deserialize<OnlineUser>(jsonString);
- 
-            if (user != null)
+            OnlineUser[]? users = JsonSerializer.Deserialize<OnlineUser[]>(await response.Content.ReadAsStringAsync());
+            if (users != null)
             {
-                users.Add(user);
+                Users = users.ToList();
             }
         }
- 
-        return users;
+        return Users;
     }
 }
