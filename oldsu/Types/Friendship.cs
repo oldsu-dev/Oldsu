@@ -6,7 +6,9 @@ namespace Oldsu.Types
 {
     public class Friendship
     {
-        [Key] public uint UserID { get; set; }
+        [Key]
+        public uint FriendshipID { get; set; }
+        public uint UserID { get; set; }
         public uint FriendUserID { get; set; }
         
         [ForeignKey(nameof(UserID))] public UserInfo User { get; set; }
