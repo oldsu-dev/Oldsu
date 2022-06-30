@@ -31,6 +31,16 @@ namespace Oldsu.DatabaseServices.MySql
             return await UserInfo.FindAsync(userId);
         }
 
+        public async Task SetUserBanByName(string userName, bool isBanned)
+        {
+            var user = UserInfo.Where(u => u.Username == userName).FirstOrDefaultAsync();
+            if (user != null)
+            {
+                user.Result.Banned = isBanned;
+                await SaveChangesAsync();
+            }
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseMySql(
