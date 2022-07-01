@@ -7,6 +7,7 @@ namespace Oldsu.DatabaseServices
     {
         public Task<UserInfo?> AuthenticateAsync(string username, string passwordHash);
         public Task<UserInfo?> GetUserInfoAsync(uint userId);
-        public Task SetUserBanByName(string userName, bool isBanned);
+        public Task SetUserBanByName(string userName, bool isBanned, string reason);
+        public Task SetUserBanByID(int userID, bool isBanned, string reason);
     }
 }
