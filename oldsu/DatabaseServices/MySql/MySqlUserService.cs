@@ -31,12 +31,24 @@ namespace Oldsu.DatabaseServices.MySql
             return await UserInfo.FindAsync(userId);
         }
 
-        public async Task SetUserBanByName(string userName, bool isBanned)
+        public async Task SetUserBanByName(string userName, bool isBanned, string reason)
         {
             var user = UserInfo.Where(u => u.Username == userName).FirstOrDefaultAsync();
             if (user != null)
             {
                 user.Result.Banned = isBanned;
+                user.Result.BannedReason = reason;
+                await SaveChangesAsync();
+            }
+        }
+        
+        public async Task SetUserBanByID(int userID, bool isBanned, string reason)
+        {
+            var user = UserInfo.Where(u => u.UserID == userID).FirstOrDefaultAsync();
+            if (user != null)
+            {
+                user.Result.Banned = isBanned;
+                user.Result.BannedReason = reason;
                 await SaveChangesAsync();
             }
         }
