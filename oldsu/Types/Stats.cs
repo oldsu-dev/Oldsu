@@ -3,14 +3,20 @@ using Oldsu.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Oldsu.Types
 {
-    [Keyless]
     public class Stats
     {
-        public int UserID { get; set; }
+        [Key]
+        public uint StatsID { get; set; }
+        
+        public uint UserID { get; set; }
+        
+        [ForeignKey(nameof(UserID))]
+        public virtual UserInfo User { get; set; }
 
         [Required]
         public Mode Mode { get; set; }

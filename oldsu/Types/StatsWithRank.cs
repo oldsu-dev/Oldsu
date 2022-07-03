@@ -1,3 +1,6 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Oldsu.Enums;
 
@@ -8,8 +11,11 @@ namespace Oldsu.Types
     {
         public uint Rank { get; set; }
         
-        public int UserID { get; set; }
+        public uint UserID { get; set; }
+        
+        public virtual UserInfo User { get; set; }
 
+        [Required]
         public Mode Mode { get; set; }
 
         public ulong RankedScore { get; set; }
@@ -33,5 +39,32 @@ namespace Oldsu.Types
         public ulong Hit100 { get; set; }
         public ulong Hit50 { get; set; }
         public ulong HitMiss { get; set; }
+
+        public Stats ToStats()
+        {
+            return new Stats
+            {
+                Accuracy = Accuracy,
+                Hit50 = Hit50,
+                Hit100 = Hit100,
+                Hit300 = Hit300,
+                Mode = Mode,
+                Playcount = Playcount,
+                User = User,
+                CountA = CountA,
+                CountB = CountB,
+                CountC = CountC,
+                CountD = CountD,
+                CountS = CountS,
+                HitMiss = HitMiss,
+                RankedScore = RankedScore,
+                TotalScore = TotalScore,
+                UserLevel = UserLevel,
+                CountSH = CountSH,
+                CountSS = CountSS,
+                UserID = UserID,
+                CountSSH = CountSSH
+            };
+        }
     }
 }
