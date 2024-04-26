@@ -1,11 +1,16 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Oldsu.Types
 {
-    [Keyless]
     public class HighScoreWithRank
     {
+        [Key]
         public uint ScoreId { get; set; }
 
         public uint UserId { get; set; }
@@ -14,6 +19,12 @@ namespace Oldsu.Types
         public ulong Rank { get; set; }
 
         public string BeatmapHash { get; set; }
+        
+        [ForeignKey("BeatmapHash")]
+
+        public virtual Beatmap Beatmap { get; set; }
+        
+        public string SubmitHash { get; set; }
 
         public ulong Score { get; set; }
         public uint MaxCombo { get; set; }
@@ -41,6 +52,6 @@ namespace Oldsu.Types
         public override string ToString() =>
             $"{ScoreId}|{User.Username}|{Score}|{MaxCombo}|{Hit50}|{Hit100}|" +
             $"{Hit300}|{HitMiss}|{HitKatu}|{HitGeki}|{(Perfect ? 1 : 0)}|{Mods}|" +
-            $"{UserId}|{Rank}|1\n";
+            $"{UserId}|{Rank}|{SubmittedAt.ToString(CultureInfo.InvariantCulture)}\n";
     }
 }
